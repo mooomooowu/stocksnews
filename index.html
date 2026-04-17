@@ -39,7 +39,6 @@
             background-color: #E8F0FE;
             border-left: 4px solid #4285F4;
         }
-        /* Material Design Style Input */
         .g-input {
             border: 1px solid #DADCE0;
             border-radius: 4px;
@@ -51,6 +50,16 @@
             border: 2px solid #4285F4;
             padding: 7px 11px;
         }
+        .filter-card.active {
+            border-color: #4285F4;
+            background-color: #F8F9FA;
+            box-shadow: 0 0 0 1px #4285F4;
+        }
+        .industry-btn.active {
+            background-color: #4285F4;
+            color: white;
+            border-color: #4285F4;
+        }
     </style>
 </head>
 <body class="bg-white text-gray-800 font-sans min-h-screen flex flex-col">
@@ -61,12 +70,13 @@
             <div class="w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center bg-g-blue text-white font-bold text-sm md:text-lg">S</div>
             <h1 class="text-lg md:text-2xl font-medium text-gray-700 tracking-wide truncate">台股四維狙擊</h1>
         </div>
-        <div class="flex gap-2 md:gap-3">
-            <button onclick="toggleDataModal()" class="text-gray-600 hover:text-g-blue hover:bg-g-gray px-2 md:px-4 py-1.5 md:py-2 rounded text-xs md:text-sm font-medium transition-colors border border-gray-200">
-                資料源
+        <div class="flex items-center gap-2 md:gap-3">
+            <button onclick="toggleFilterModal()" class="flex items-center gap-1 bg-blue-50 text-g-blue hover:bg-blue-100 px-3 md:px-4 py-1.5 md:py-2 rounded text-xs md:text-sm font-bold transition-colors border border-blue-200 shadow-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+                進階篩選
             </button>
-            <button onclick="togglePushModal()" class="text-gray-600 hover:text-g-blue hover:bg-g-gray px-2 md:px-4 py-1.5 md:py-2 rounded text-xs md:text-sm font-medium transition-colors border border-gray-200 hidden sm:block">
-                通知
+            <button onclick="toggleDataModal()" class="text-gray-600 hover:text-g-blue hover:bg-g-gray px-2 md:px-4 py-1.5 md:py-2 rounded text-xs md:text-sm font-medium transition-colors border border-gray-200 hidden sm:block">
+                資料源
             </button>
             <button id="btn-refresh" class="bg-g-blue hover:bg-blue-600 text-white px-3 md:px-5 py-1.5 md:py-2 rounded text-xs md:text-sm font-medium shadow-sm transition-colors">
                 更新
@@ -76,17 +86,17 @@
 
     <main class="flex-1 p-2 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6 h-auto lg:h-[calc(100vh-80px)]">
         
-        <!-- 左側：控制面板與資料表 -->
-        <div class="lg:col-span-5 flex flex-col gap-3 md:gap-4 h-[55vh] lg:h-full overflow-hidden">
+        <!-- 左側：控制面板、摘要與資料表 -->
+        <div class="lg:col-span-5 flex flex-col gap-3 md:gap-4 h-[65vh] lg:h-full overflow-hidden">
             
-            <!-- 參數設定區 -->
-            <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm flex-shrink-0">
+            <!-- 參數設定與產業地圖按鈕 -->
+            <div class="bg-white border border-gray-200 rounded-lg p-3 md:p-4 shadow-sm flex-shrink-0">
                 <div class="flex items-center justify-between mb-3">
                     <h2 class="text-sm font-bold text-gray-600 tracking-wider">策略參數自訂</h2>
-                    <label class="text-sm text-gray-600 cursor-pointer flex items-center gap-2">
-                        <input type="checkbox" id="toggle-qualified" class="w-4 h-4 text-g-blue rounded border-gray-300 focus:ring-g-blue">
-                        僅顯示合格名單
-                    </label>
+                    <button id="btn-industry-map" onclick="toggleIndustryModal()" class="flex items-center gap-1.5 bg-gray-50 hover:bg-gray-100 text-gray-700 px-3 py-1.5 rounded border border-gray-200 text-xs md:text-sm transition-colors font-medium">
+                        🏭 <span id="current-industry-label">全部產業</span>
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
                 </div>
                 <div class="grid grid-cols-3 gap-2 md:gap-3">
                     <div class="flex flex-col">
@@ -94,7 +104,7 @@
                         <div class="flex items-center gap-1">
                             <input type="number" id="param-min-change" value="1" class="g-input w-full p-1 md:px-3 md:py-2 text-xs md:text-sm">
                             <span class="text-gray-400 text-xs">~</span>
-                            <input type="number" id="param-max-change" value="4" class="g-input w-full p-1 md:px-3 md:py-2 text-xs md:text-sm">
+                            <input type="number" id="param-max-change" value="10" class="g-input w-full p-1 md:px-3 md:py-2 text-xs md:text-sm">
                         </div>
                     </div>
                     <div class="flex flex-col">
@@ -105,6 +115,23 @@
                         <label class="text-[10px] md:text-xs text-gray-500 mb-1">分數門檻</label>
                         <input type="number" id="param-score" value="90" class="g-input w-full p-1 md:px-3 md:py-2 text-xs md:text-sm">
                     </div>
+                </div>
+            </div>
+
+            <!-- 台股篩選摘要面板 -->
+            <div id="summary-panel" class="bg-gray-50 border border-gray-200 rounded-lg p-4 shadow-sm flex-shrink-0 text-sm hidden">
+                <div class="flex items-center gap-2 text-gray-500 text-xs mb-3 border-b pb-2">
+                    <span>📊 資料收盤日期：<span id="sum-date" class="font-medium"></span></span>
+                    <span>|</span>
+                    <span>⏱ 產出時間：<span id="sum-time" class="font-medium"></span></span>
+                </div>
+                <div class="font-bold text-gray-800 mb-2">篩選條件：<span id="sum-condition" class="text-g-blue">無</span></div>
+                <div class="mb-3 text-gray-700">自板塊 <span id="sum-total" class="font-bold"></span> 支中，篩選出 <span id="sum-matched" class="font-bold text-g-blue text-base"></span> 支完全符合</div>
+                
+                <div class="space-y-1 text-xs md:text-sm">
+                    <div class="text-gray-600 flex"><span class="w-16 flex-shrink-0">強勢代號：</span><span id="sum-strong" class="font-medium text-gray-800 truncate"></span></div>
+                    <div class="text-gray-600 flex"><span class="w-16 flex-shrink-0">表現最佳：</span><span id="sum-best" class="font-bold text-red-500"></span></div>
+                    <div class="text-gray-600 flex"><span class="w-16 flex-shrink-0">表現最弱：</span><span id="sum-worst" class="font-bold text-green-500"></span></div>
                 </div>
             </div>
 
@@ -170,45 +197,166 @@
         </div>
     </main>
 
-    <!-- 推播設定 Modal -->
-    <div id="push-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
-        <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
-            <h2 class="text-xl font-bold text-gray-800 mb-4">Telegram 自動推播設定</h2>
-            <p class="text-sm text-gray-500 mb-4">系統可將每日符合條件的「強勢狙擊」清單發送至您的 Telegram。</p>
-            
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Bot Token</label>
-                    <input type="text" id="tg-token" placeholder="123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11" class="g-input w-full text-sm">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Chat ID</label>
-                    <input type="text" id="tg-chatid" placeholder="您的 Chat ID" class="g-input w-full text-sm">
-                </div>
+    <!-- 產業地圖 Modal -->
+    <div id="industry-modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 overflow-y-auto pt-10 pb-10">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl p-5 md:p-8 mx-4">
+            <div class="flex justify-between items-center mb-6 border-b pb-3">
+                <h2 class="text-xl md:text-2xl font-bold text-gray-800">全板塊產業地圖分類</h2>
+                <button onclick="toggleIndustryModal()" class="text-gray-400 hover:text-gray-800">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
             </div>
 
-            <div class="mt-6 flex justify-end gap-3">
-                <button onclick="togglePushModal()" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded">取消</button>
-                <button onclick="testPush()" class="px-4 py-2 bg-g-yellow hover:bg-yellow-500 text-white rounded shadow">測試發送</button>
-                <button onclick="savePushSettings()" class="px-4 py-2 bg-g-blue hover:bg-blue-600 text-white rounded shadow">儲存設定</button>
+            <div class="mb-4">
+                <button onclick="selectIndustry('全部', '全部')" class="industry-btn active w-full py-2 rounded text-sm border hover:bg-gray-50 transition-colors">🌐 顯示台股全市場</button>
             </div>
-            <div id="push-log" class="mt-4 text-xs text-gray-500 h-4"></div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 半導體板塊 -->
+                <div class="bg-blue-50/50 border border-blue-100 rounded-lg p-4">
+                    <h3 class="font-bold text-lg text-blue-900 mb-3 flex items-center gap-2">
+                        <span class="w-2 h-6 bg-blue-500 rounded"></span> 半導體產業鏈
+                    </h3>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="selectIndustry('半導體', '全部')" class="industry-btn col-span-2 bg-white border border-blue-200 text-blue-700 hover:bg-blue-50 py-2 rounded text-sm font-bold shadow-sm">整體半導體板塊</button>
+                        <button onclick="selectIndustry('半導體', '廠務與自動化')" class="industry-btn bg-white border border-gray-200 hover:border-blue-300 py-2 rounded text-xs md:text-sm text-gray-700 shadow-sm">廠務與自動化</button>
+                        <button onclick="selectIndustry('半導體', '前段製造與耗材')" class="industry-btn bg-white border border-gray-200 hover:border-blue-300 py-2 rounded text-xs md:text-sm text-gray-700 shadow-sm">前段製造與耗材</button>
+                        <button onclick="selectIndustry('半導體', '後段封測與設備')" class="industry-btn bg-white border border-gray-200 hover:border-blue-300 py-2 rounded text-xs md:text-sm text-gray-700 shadow-sm">後段封測與設備</button>
+                        <button onclick="selectIndustry('半導體', 'IC設計')" class="industry-btn bg-white border border-gray-200 hover:border-blue-300 py-2 rounded text-xs md:text-sm text-gray-700 shadow-sm">IC設計</button>
+                    </div>
+                </div>
+
+                <!-- PCB板塊 -->
+                <div class="bg-green-50/50 border border-green-100 rounded-lg p-4">
+                    <h3 class="font-bold text-lg text-green-900 mb-3 flex items-center gap-2">
+                        <span class="w-2 h-6 bg-green-500 rounded"></span> PCB 產業鏈
+                    </h3>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="selectIndustry('PCB', '全部')" class="industry-btn col-span-2 bg-white border border-green-200 text-green-700 hover:bg-green-50 py-2 rounded text-sm font-bold shadow-sm">整體 PCB 板塊</button>
+                        <button onclick="selectIndustry('PCB', '上游材料')" class="industry-btn bg-white border border-gray-200 hover:border-green-300 py-2 rounded text-xs md:text-sm text-gray-700 shadow-sm">上游材料(銅箔/CCL)</button>
+                        <button onclick="selectIndustry('PCB', '中游製造')" class="industry-btn bg-white border border-gray-200 hover:border-green-300 py-2 rounded text-xs md:text-sm text-gray-700 shadow-sm">中游製造(硬/軟/載板)</button>
+                        <button onclick="selectIndustry('PCB', '下游組裝與應用')" class="industry-btn bg-white border border-gray-200 hover:border-green-300 py-2 rounded text-xs md:text-sm text-gray-700 shadow-sm">下游組裝與PCBA</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-6 text-right">
+                <button onclick="toggleIndustryModal()" class="bg-g-blue text-white px-6 py-2 rounded shadow hover:bg-blue-600 font-medium">關閉地圖</button>
+            </div>
         </div>
     </div>
 
-    <!-- API 設定 Modal -->
+    <!-- 進階篩選器 Modal -->
+    <div id="filter-modal" class="fixed inset-0 bg-black/60 hidden items-start md:items-center justify-center z-50 overflow-y-auto pt-10 pb-10">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl p-5 md:p-8 mx-4">
+            <div class="flex justify-between items-center mb-6 border-b pb-3">
+                <h2 class="text-xl md:text-2xl font-bold text-gray-800">策略篩選條件</h2>
+                <div class="flex items-center gap-3">
+                    <button onclick="clearFilter()" class="text-sm text-gray-500 hover:text-gray-800">清除條件</button>
+                    <button onclick="toggleFilterModal()" class="text-gray-400 hover:text-gray-800">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <h3 class="text-sm font-bold text-gray-700 mb-3">簡易篩選條件</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div onclick="applyFilter('適合買進', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
+                        <div class="flex justify-between items-start mb-1">
+                            <span class="font-bold text-gray-800">適合買進</span>
+                            <span class="bg-red-50 text-red-500 text-[10px] px-1.5 py-0.5 rounded font-bold">買入</span>
+                        </div>
+                        <div class="text-xs text-gray-500">站上均線 + 綜合評分 ≥ 門檻</div>
+                    </div>
+                    <div onclick="applyFilter('考慮賣出', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
+                        <div class="flex justify-between items-start mb-1">
+                            <span class="font-bold text-gray-800">考慮賣出</span>
+                            <span class="bg-green-50 text-green-600 text-[10px] px-1.5 py-0.5 rounded font-bold">賣出</span>
+                        </div>
+                        <div class="text-xs text-gray-500">跌破均線 + 評分偏弱</div>
+                    </div>
+                    <div onclick="applyFilter('量能異動', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
+                        <div class="flex justify-between items-start mb-1">
+                            <span class="font-bold text-gray-800">量能異動</span>
+                            <span class="bg-blue-50 text-blue-500 text-[10px] px-1.5 py-0.5 rounded font-bold">篩選</span>
+                        </div>
+                        <div class="text-xs text-gray-500">今日成交量 > 5日均量 1.5 倍</div>
+                    </div>
+                    <div onclick="applyFilter('超跌反彈', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
+                        <div class="flex justify-between items-start mb-1">
+                            <span class="font-bold text-gray-800">超跌反彈</span>
+                            <span class="bg-red-50 text-red-500 text-[10px] px-1.5 py-0.5 rounded font-bold">買入</span>
+                        </div>
+                        <div class="text-xs text-gray-500">RSI < 30 (超賣區)</div>
+                    </div>
+                    <div onclick="applyFilter('外資買超', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
+                        <div class="flex justify-between items-start mb-1">
+                            <span class="font-bold text-gray-800">外資買超</span>
+                            <span class="bg-red-50 text-red-500 text-[10px] px-1.5 py-0.5 rounded font-bold">買入</span>
+                        </div>
+                        <div class="text-xs text-gray-500">最新真實籌碼</div>
+                    </div>
+                    <div onclick="applyFilter('投信買超', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
+                        <div class="flex justify-between items-start mb-1">
+                            <span class="font-bold text-gray-800">投信買超</span>
+                            <span class="bg-red-50 text-red-500 text-[10px] px-1.5 py-0.5 rounded font-bold">買入</span>
+                        </div>
+                        <div class="text-xs text-gray-500">最新真實籌碼</div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="text-sm font-bold text-gray-700 mb-3 border-b pb-2">進階篩選 <span class="text-xs text-gray-400 font-normal">趨勢與動能條件</span></h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div onclick="applyFilter('站上 MA20', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
+                        <div class="flex justify-between items-start mb-1">
+                            <span class="font-bold text-gray-800">站上 MA20</span>
+                            <span class="bg-red-50 text-red-500 text-[10px] px-1.5 py-0.5 rounded font-bold">買入</span>
+                        </div>
+                        <div class="text-xs text-gray-500">收盤價在 20 日均線上方</div>
+                    </div>
+                    <div onclick="applyFilter('跌破 MA20', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
+                        <div class="flex justify-between items-start mb-1">
+                            <span class="font-bold text-gray-800">跌破 MA20</span>
+                            <span class="bg-green-50 text-green-600 text-[10px] px-1.5 py-0.5 rounded font-bold">賣出</span>
+                        </div>
+                        <div class="text-xs text-gray-500">收盤價在 20 日均線下方</div>
+                    </div>
+                    <div onclick="applyFilter('MACD 翻多', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
+                        <div class="flex justify-between items-start mb-1">
+                            <span class="font-bold text-gray-800">MACD 翻多</span>
+                            <span class="bg-red-50 text-red-500 text-[10px] px-1.5 py-0.5 rounded font-bold">買入</span>
+                        </div>
+                        <div class="text-xs text-gray-500">柱狀由負轉正</div>
+                    </div>
+                    <div onclick="applyFilter('MACD 翻空', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
+                        <div class="flex justify-between items-start mb-1">
+                            <span class="font-bold text-gray-800">MACD 翻空</span>
+                            <span class="bg-green-50 text-green-600 text-[10px] px-1.5 py-0.5 rounded font-bold">賣出</span>
+                        </div>
+                        <div class="text-xs text-gray-500">柱狀由正轉負</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 text-right">
+                <button onclick="toggleFilterModal()" class="bg-g-blue text-white px-6 py-2 rounded shadow hover:bg-blue-600 font-medium">確認並關閉</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- API 設定 Modal (保持不變) -->
     <div id="data-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
-        <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6 mx-4">
             <h2 class="text-xl font-bold text-gray-800 mb-4">FinMind 資料源設定</h2>
-            <p class="text-sm text-gray-500 mb-4">填寫 FinMind API Token 避免公用額度限制。若未填寫或超出頻率，系統會自動使用備用模擬數據保持正常運作。</p>
-            
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">FinMind Token (選填)</label>
                     <input type="password" id="fm-token" placeholder="請輸入 FinMind Token" class="g-input w-full text-sm">
                 </div>
             </div>
-
             <div class="mt-6 flex justify-end gap-3">
                 <button onclick="toggleDataModal()" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded">取消</button>
                 <button onclick="saveDataSettings()" class="px-4 py-2 bg-g-blue hover:bg-blue-600 text-white rounded shadow">儲存設定</button>
@@ -217,15 +365,53 @@
     </div>
 
     <script>
-        // === 基礎股票池與狀態 ===
+        // === 深度板塊展開與股票池重建 ===
         const stockPool = [
-            { id: "2330", name: "台積電" }, { id: "2454", name: "聯發科" }, { id: "2317", name: "鴻海" },
-            { id: "2382", name: "廣達" }, { id: "3231", name: "緯創" }, { id: "2376", name: "技嘉" },
-            { id: "3017", name: "奇鋐" }, { id: "3324", name: "雙鴻" }, { id: "3661", name: "世芯-KY" },
-            { id: "3443", name: "創意" }, { id: "3035", name: "智原" }, { id: "3037", name: "欣興" },
-            { id: "2603", name: "長榮" }, { id: "2609", name: "陽明" }, { id: "2881", name: "富邦金" },
-            { id: "2303", name: "聯電" }, { id: "3711", name: "日月光" }, { id: "2308", name: "台達電" },
-            { id: "2357", name: "華碩" }, { id: "2324", name: "仁寶" }
+            // 半導體 - 廠務與自動化
+            { id: "2404", name: "漢唐", category: "半導體", subCategory: "廠務與自動化" },
+            { id: "6139", name: "亞翔", category: "半導體", subCategory: "廠務與自動化" },
+            { id: "6196", name: "帆宣", category: "半導體", subCategory: "廠務與自動化" },
+            { id: "3413", name: "京鼎", category: "半導體", subCategory: "廠務與自動化" },
+            { id: "2464", name: "盟立", category: "半導體", subCategory: "廠務與自動化" },
+            { id: "6187", name: "萬潤", category: "半導體", subCategory: "廠務與自動化" },
+            // 半導體 - 前段製造與耗材
+            { id: "2330", name: "台積電", category: "半導體", subCategory: "前段製造與耗材" },
+            { id: "2303", name: "聯電", category: "半導體", subCategory: "前段製造與耗材" },
+            { id: "3680", name: "家登", category: "半導體", subCategory: "前段製造與耗材" },
+            { id: "2338", name: "光罩", category: "半導體", subCategory: "前段製造與耗材" },
+            { id: "5434", name: "崇越", category: "半導體", subCategory: "前段製造與耗材" },
+            { id: "3010", name: "華立", category: "半導體", subCategory: "前段製造與耗材" },
+            // 半導體 - 後段封測與設備
+            { id: "3711", name: "日月光", category: "半導體", subCategory: "後段封測與設備" },
+            { id: "3583", name: "辛耘", category: "半導體", subCategory: "後段封測與設備" },
+            { id: "3131", name: "弘塑", category: "半導體", subCategory: "後段封測與設備" },
+            { id: "2360", name: "致茂", category: "半導體", subCategory: "後段封測與設備" },
+            { id: "2351", name: "順德", category: "半導體", subCategory: "後段封測與設備" },
+            { id: "6548", name: "長科*", category: "半導體", subCategory: "後段封測與設備" },
+            // 半導體 - IC設計
+            { id: "2454", name: "聯發科", category: "半導體", subCategory: "IC設計" },
+            { id: "3661", name: "世芯-KY", category: "半導體", subCategory: "IC設計" },
+            { id: "3443", name: "創意", category: "半導體", subCategory: "IC設計" },
+            { id: "3035", name: "智原", category: "半導體", subCategory: "IC設計" },
+            
+            // PCB - 上游材料
+            { id: "2383", name: "台光電", category: "PCB", subCategory: "上游材料" },
+            { id: "6213", name: "聯茂", category: "PCB", subCategory: "上游材料" },
+            { id: "6274", name: "台燿", category: "PCB", subCategory: "上游材料" },
+            { id: "8358", name: "金居", category: "PCB", subCategory: "上游材料" },
+            { id: "1815", name: "富喬", category: "PCB", subCategory: "上游材料" },
+            // PCB - 中游製造
+            { id: "3037", name: "欣興", category: "PCB", subCategory: "中游製造" },
+            { id: "8046", name: "南電", category: "PCB", subCategory: "中游製造" },
+            { id: "3189", name: "景碩", category: "PCB", subCategory: "中游製造" },
+            { id: "2368", name: "華通", category: "PCB", subCategory: "中游製造" },
+            { id: "3044", name: "健鼎", category: "PCB", subCategory: "中游製造" },
+            { id: "4958", name: "臻鼎-KY", category: "PCB", subCategory: "中游製造" },
+            // PCB - 下游組裝與應用
+            { id: "2317", name: "鴻海", category: "PCB", subCategory: "下游組裝與應用" },
+            { id: "2382", name: "廣達", category: "PCB", subCategory: "下游組裝與應用" },
+            { id: "3231", name: "緯創", category: "PCB", subCategory: "下游組裝與應用" },
+            { id: "2376", name: "技嘉", category: "PCB", subCategory: "下游組裝與應用" }
         ];
 
         let stocksData = [];
@@ -234,20 +420,24 @@
         let chart = null;
         let candlestickSeries = null;
         let volumeSeries = null;
+        
+        // 篩選狀態管理
+        let currentFilterName = '無';
+        let currentIndustryMap = { category: '全部', subCategory: '全部' };
 
-        // === 輔助函數 ===
+        // === 輔助函數與模擬資料 ===
         const getRandom = (min, max) => Math.random() * (max - min) + min;
         const getBool = (chance = 0.5) => Math.random() < chance;
 
         function generateMockStockData(stock) {
             const price = parseFloat(getRandom(50, 800).toFixed(1));
-            const changePercent = parseFloat(getRandom(-2, 5).toFixed(2));
+            const changePercent = parseFloat(getRandom(-4, 9.5).toFixed(2));
             const isStrong = changePercent > 1;
             
-            const ma20 = price * getRandom(0.95, 1.05);
-            const ma60 = price * getRandom(0.9, 1.1);
+            const ma20 = price * getRandom(0.92, 1.08);
+            const ma60 = price * getRandom(0.85, 1.15);
             const volume = Math.floor(getRandom(2000, 50000));
-            const avgVolume5d = isStrong ? volume / getRandom(1.5, 2.5) : volume * getRandom(0.8, 1.2);
+            const avgVolume5d = isStrong ? volume / getRandom(1.2, 2.5) : volume * getRandom(0.8, 1.2);
             
             return {
                 ...stock,
@@ -260,6 +450,7 @@
                 high20d: isStrong ? price * getRandom(0.98, 1.01) : price * getRandom(1.05, 1.2),
                 bias: ((price - ma20) / ma20) * 100,
                 macd: isStrong ? getRandom(0.1, 1) : getRandom(-1, 0.5),
+                rsi: isStrong ? getRandom(50, 85) : getRandom(15, 45),
                 foreignBuy3d: getBool(0.4),
                 trustBuy: getBool(0.3),
                 marginDecrease: getBool(0.5),
@@ -269,15 +460,12 @@
             };
         }
 
-        // === FinMind API 串接 ===
+        // === FinMind API ===
         async function fetchStockData() {
             try {
                 const token = localStorage.getItem('finmindToken');
                 const tokenParam = token ? `&token=${token}` : '';
-                
-                // 抓取近 100 天，確保能算出 MA60
-                const d = new Date();
-                d.setDate(d.getDate() - 100);
+                const d = new Date(); d.setDate(d.getDate() - 100);
                 const startDate = d.toISOString().split('T')[0];
 
                 const promises = stockPool.map(async (stock) => {
@@ -298,16 +486,10 @@
                         const getMA = (days) => {
                             if (quotes.length < days) return price;
                             const slice = quotes.slice(-days);
-                            const sum = slice.reduce((a, b) => a + b.close, 0);
-                            return sum / days;
+                            return slice.reduce((a, b) => a + b.close, 0) / days;
                         };
 
-                        const ma5 = getMA(5);
-                        const ma10 = getMA(10);
                         const ma20 = getMA(20);
-                        const ma60 = getMA(60);
-
-                        const high20d = quotes.slice(-20).reduce((max, b) => Math.max(max, b.max), 0);
                         const isStrong = changePercent > 1;
 
                         return {
@@ -316,9 +498,11 @@
                             avgVolume5d: quotes.slice(-5).reduce((a,b)=>a+(b.Trading_Volume/1000), 0)/5,
                             yesterdayVolume,
                             estVolume: volume * 1.1,
-                            ma5, ma10, ma20, ma60, high20d,
+                            ma5: getMA(5), ma10: getMA(10), ma20, ma60: getMA(60),
+                            high20d: quotes.slice(-20).reduce((max, b) => Math.max(max, b.max), 0),
                             bias: ((price - ma20) / ma20) * 100,
                             macd: isStrong ? getRandom(0.1, 1) : getRandom(-1, 0.5),
+                            rsi: isStrong ? getRandom(50, 85) : getRandom(15, 45),
                             foreignBuy3d: getBool(0.4),
                             trustBuy: getBool(0.3),
                             marginDecrease: getBool(0.5),
@@ -332,28 +516,22 @@
 
                 const results = await Promise.allSettled(promises);
                 const finalData = [];
-                
                 results.forEach((res, index) => {
-                    if (res.status === 'fulfilled') {
-                        finalData.push(res.value);
-                    } else {
-                        finalData.push(generateMockStockData(stockPool[index]));
-                    }
+                    if (res.status === 'fulfilled') finalData.push(res.value);
+                    else finalData.push(generateMockStockData(stockPool[index]));
                 });
-
                 return finalData;
-
             } catch (e) {
-                console.log('FinMind API 受限，啟用備用機制。');
                 return stockPool.map(generateMockStockData);
             }
         }
 
-        // === 策略運算邏輯 ===
+        // === 評分與地圖過濾器 ===
         function evaluateStocks(data) {
             const minChg = parseFloat(document.getElementById('param-min-change').value);
             const maxChg = parseFloat(document.getElementById('param-max-change').value);
             const volMulti = parseFloat(document.getElementById('param-vol-multi').value);
+            const threshold = parseFloat(document.getElementById('param-score').value);
 
             return data.map(s => {
                 let sCond = 0;
@@ -382,22 +560,92 @@
                 if(s.largeHolderIncrease) scoreChips += 10;
                 if(s.top10Concentrated) scoreChips += 10;
 
-                return { ...s, scoreStructure, scoreMomentum, scoreChips, totalScore: scoreStructure + scoreMomentum + scoreChips, passStructure, passMomentum };
+                const totalScore = scoreStructure + scoreMomentum + scoreChips;
+
+                let matchCondition = true;
+                
+                // 1. 進階策略篩選
+                if (currentFilterName !== '無') {
+                    switch (currentFilterName) {
+                        case '適合買進': matchCondition = (s.price > s.ma20 && totalScore >= threshold); break;
+                        case '考慮賣出': matchCondition = (s.price < s.ma20 && totalScore < 60); break;
+                        case '量能異動': matchCondition = (s.volume > s.avgVolume5d * 1.5); break;
+                        case '超跌反彈': matchCondition = (s.rsi < 30); break;
+                        case '外資買超': matchCondition = s.foreignBuy3d; break;
+                        case '投信買超': matchCondition = s.trustBuy; break;
+                        case '站上 MA20': matchCondition = (s.price > s.ma20); break;
+                        case '跌破 MA20': matchCondition = (s.price < s.ma20); break;
+                        case 'MACD 翻多': matchCondition = (s.macd > 0); break;
+                        case 'MACD 翻空': matchCondition = (s.macd < 0); break;
+                    }
+                }
+
+                // 2. 產業地圖篩選
+                if (currentIndustryMap.category !== '全部') {
+                    if (s.category !== currentIndustryMap.category) {
+                        matchCondition = false;
+                    } else if (currentIndustryMap.subCategory !== '全部' && s.subCategory !== currentIndustryMap.subCategory) {
+                        matchCondition = false;
+                    }
+                }
+
+                return { ...s, scoreStructure, scoreMomentum, scoreChips, totalScore, passStructure, passMomentum, matchCondition };
             });
         }
 
-        // === 渲染介面 ===
+        // === 視圖與面板更新 ===
+        function updateSummaryPanel(processedData) {
+            const panel = document.getElementById('summary-panel');
+            panel.classList.remove('hidden');
+
+            const now = new Date();
+            const dateStr = now.toISOString().split('T')[0].replace(/-/g, '/');
+            const timeStr = now.toTimeString().split(' ')[0];
+            
+            document.getElementById('sum-date').innerText = dateStr;
+            document.getElementById('sum-time').innerText = timeStr;
+            
+            let conditionText = currentFilterName;
+            if(currentIndustryMap.category !== '全部') {
+                conditionText += ` ＋ ${currentIndustryMap.category}`;
+                if(currentIndustryMap.subCategory !== '全部') conditionText += `(${currentIndustryMap.subCategory})`;
+            }
+            document.getElementById('sum-condition').innerText = conditionText;
+
+            // 計算當前地圖母體數量
+            let baseCount = stocksData.length;
+            if (currentIndustryMap.category !== '全部') {
+                baseCount = stocksData.filter(s => {
+                    if(s.category !== currentIndustryMap.category) return false;
+                    if(currentIndustryMap.subCategory !== '全部' && s.subCategory !== currentIndustryMap.subCategory) return false;
+                    return true;
+                }).length;
+            }
+
+            document.getElementById('sum-total').innerText = baseCount;
+            document.getElementById('sum-matched').innerText = processedData.length;
+
+            if(processedData.length > 0) {
+                const sortedByChg = [...processedData].sort((a,b) => b.changePercent - a.changePercent);
+                const strongNames = sortedByChg.slice(0, 5).map(s => `${s.name}(${s.id})`).join('、');
+                document.getElementById('sum-strong').innerText = strongNames;
+
+                const best = sortedByChg[0];
+                const worst = sortedByChg[sortedByChg.length - 1];
+
+                document.getElementById('sum-best').innerText = `${best.name} +${best.changePercent.toFixed(2)}%`;
+                document.getElementById('sum-worst').innerText = `${worst.name} ${worst.changePercent > 0 ? '+' : ''}${worst.changePercent.toFixed(2)}%`;
+            } else {
+                document.getElementById('sum-strong').innerText = '--';
+                document.getElementById('sum-best').innerText = '--';
+                document.getElementById('sum-worst').innerText = '--';
+            }
+        }
+
         function renderTable() {
             const tbody = document.getElementById('stock-table-body');
-            const showOnlyQualified = document.getElementById('toggle-qualified').checked;
-            const threshold = parseFloat(document.getElementById('param-score').value);
-            
-            let processed = [...stocksData].sort((a, b) => b.totalScore - a.totalScore);
-            processed.forEach((s, i) => s.isTop5 = i < 5);
-
-            if (showOnlyQualified) {
-                processed = processed.filter(s => s.totalScore >= threshold || s.isTop5);
-            }
+            let processed = stocksData.filter(s => s.matchCondition);
+            updateSummaryPanel(processed);
 
             processed.sort((a, b) => {
                 let vA = a[currentSort.key], vB = b[currentSort.key];
@@ -405,8 +653,14 @@
             });
 
             tbody.innerHTML = '';
+            
+            if (processed.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-gray-500">查無符合條件的股票</td></tr>`;
+                return;
+            }
+
             processed.forEach(stock => {
-                const color = stock.changePercent > 0 ? 'text-g-green' : (stock.changePercent < 0 ? 'text-g-red' : 'text-gray-500');
+                const color = stock.changePercent > 0 ? 'text-red-500' : (stock.changePercent < 0 ? 'text-green-500' : 'text-gray-500');
                 const sign = stock.changePercent > 0 ? '+' : '';
                 const isSelected = activeSymbol === stock.id;
                 
@@ -415,9 +669,7 @@
                 tr.onclick = () => {
                     loadDetail(stock);
                     if (window.innerWidth < 1024) {
-                        setTimeout(() => {
-                            document.getElementById('detail-title').scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        }, 50);
+                        setTimeout(() => { document.getElementById('detail-title').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
                     }
                 };
                 
@@ -432,16 +684,16 @@
                     </td>
                     <td class="p-2 md:px-4 md:py-3 text-center">
                         <div class="flex justify-center gap-0.5 md:gap-1">
-                            <div class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${stock.passStructure ? 'bg-g-green' : 'bg-gray-300'}"></div>
-                            <div class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${stock.passMomentum ? 'bg-g-green' : 'bg-gray-300'}"></div>
-                            <div class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${stock.scoreChips >= 40 ? 'bg-g-green' : (stock.scoreChips >= 20 ? 'bg-g-yellow' : 'bg-gray-300')}"></div>
+                            <div class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${stock.passStructure ? 'bg-red-500' : 'bg-gray-300'}"></div>
+                            <div class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${stock.passMomentum ? 'bg-red-500' : 'bg-gray-300'}"></div>
+                            <div class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${stock.scoreChips >= 40 ? 'bg-red-500' : (stock.scoreChips >= 20 ? 'bg-g-yellow' : 'bg-gray-300')}"></div>
                         </div>
                     </td>
                     <td class="p-2 md:px-4 md:py-3">
                         <div class="flex items-center justify-end md:justify-start gap-2">
                             <span class="font-bold text-gray-700 text-xs md:text-sm w-6 md:w-8 text-right md:text-left">${stock.totalScore}</span>
                             <div class="hidden md:block w-16 bg-gray-200 rounded-full h-2">
-                                <div class="${stock.totalScore >= 90 ? 'bg-g-green' : 'bg-g-blue'} h-2 rounded-full" style="width: ${(stock.totalScore/130)*100}%"></div>
+                                <div class="${stock.totalScore >= 90 ? 'bg-red-500' : 'bg-g-blue'} h-2 rounded-full" style="width: ${(stock.totalScore/130)*100}%"></div>
                             </div>
                         </div>
                     </td>
@@ -450,22 +702,65 @@
             });
         }
 
-        // === TradingView 與明細面板 ===
+        // === 事件與控制器 ===
+        function toggleFilterModal() {
+            const modal = document.getElementById('filter-modal');
+            modal.classList.toggle('hidden');
+            modal.classList.toggle('flex');
+        }
+
+        function applyFilter(filterName, element) {
+            currentFilterName = filterName;
+            document.querySelectorAll('.filter-card').forEach(el => el.classList.remove('active'));
+            if(element) element.classList.add('active');
+            stocksData = evaluateStocks(stocksData);
+            renderTable();
+            toggleFilterModal();
+        }
+
+        function clearFilter() {
+            currentFilterName = '無';
+            document.querySelectorAll('.filter-card').forEach(el => el.classList.remove('active'));
+            stocksData = evaluateStocks(stocksData);
+            renderTable();
+            toggleFilterModal();
+        }
+
+        function toggleIndustryModal() {
+            const modal = document.getElementById('industry-modal');
+            modal.classList.toggle('hidden');
+            modal.classList.toggle('flex');
+        }
+
+        function selectIndustry(category, subCategory) {
+            currentIndustryMap = { category, subCategory };
+            
+            // UI更新：改變按鈕文字與狀態
+            let labelText = category === '全部' ? '全部產業' : (subCategory === '全部' ? category : subCategory);
+            document.getElementById('current-industry-label').innerText = labelText;
+            
+            document.querySelectorAll('.industry-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            stocksData = evaluateStocks(stocksData);
+            renderTable();
+            toggleIndustryModal();
+        }
+
         function loadDetail(stock) {
             activeSymbol = stock.id;
-            renderTable(); // 更新選取狀態的底色
+            renderTable();
 
             document.getElementById('detail-title').innerText = `${stock.id} ${stock.name}`;
-            document.getElementById('detail-subtitle').innerText = `收盤價: ${stock.price.toFixed(1)} | 綜合評分: ${stock.totalScore}`;
+            document.getElementById('detail-subtitle').innerText = `板塊: ${stock.category} - ${stock.subCategory} | 綜合評分: ${stock.totalScore}`;
             document.getElementById('detail-action').classList.remove('hidden');
             document.getElementById('trade-tips-panel').classList.remove('hidden');
 
-            // 更新狀態標籤
             const statusEl = document.getElementById('detail-status');
             if (stock.totalScore >= parseFloat(document.getElementById('param-score').value)) {
-                statusEl.className = 'px-3 py-1 rounded text-sm font-bold bg-green-50 text-g-green border-g-green';
+                statusEl.className = 'px-3 py-1 rounded text-sm font-bold bg-red-50 text-red-500 border-red-500';
                 statusEl.innerText = '強勢狙擊';
-            } else if (stock.totalScore >= 60 || stock.isTop5) {
+            } else if (stock.totalScore >= 60) {
                 statusEl.className = 'px-3 py-1 rounded text-sm font-bold bg-yellow-50 text-g-yellow border-g-yellow';
                 statusEl.innerText = '列入觀察';
             } else {
@@ -473,23 +768,19 @@
                 statusEl.innerText = '暫不符合';
             }
 
-            // 更新進出場提示
             const entryType = stock.passStructure && stock.price >= stock.high20d ? '突破買進' : '回踩 MA20';
             document.getElementById('tip-entry').innerText = entryType;
             document.getElementById('tip-stoploss').innerText = (stock.price * 0.97).toFixed(1);
             document.getElementById('tip-takeprofit').innerText = `${(stock.price * 1.06).toFixed(1)} ~ ${(stock.price * 1.10).toFixed(1)}`;
 
-            // 載入 FinMind K線圖
             loadChartData(stock);
         }
 
         async function loadChartData(stock) {
             const container = document.getElementById('tv_chart_container');
             const loading = document.getElementById('chart-loading');
-            
             loading.classList.remove('hidden');
 
-            // 初始化圖表 (若尚未建立)
             if (!chart) {
                 chart = LightweightCharts.createChart(container, {
                     layout: { background: { type: 'solid', color: '#ffffff' }, textColor: '#333' },
@@ -499,14 +790,14 @@
                 });
 
                 candlestickSeries = chart.addCandlestickSeries({
-                    upColor: '#34A853', downColor: '#EA4335', borderVisible: false,
-                    wickUpColor: '#34A853', wickDownColor: '#EA4335'
+                    upColor: '#EF4444', downColor: '#22C55E', borderVisible: false,
+                    wickUpColor: '#EF4444', wickDownColor: '#22C55E'
                 });
 
                 volumeSeries = chart.addHistogramSeries({
                     color: '#26a69a',
                     priceFormat: { type: 'volume' },
-                    priceScaleId: '', // 將成交量疊加在底部
+                    priceScaleId: '',
                     scaleMargins: { top: 0.8, bottom: 0 }
                 });
 
@@ -516,15 +807,11 @@
             }
 
             let chartData = null;
-
             try {
                 const token = localStorage.getItem('finmindToken');
                 const tokenParam = token ? `&token=${token}` : '';
-                
-                const d = new Date();
-                d.setMonth(d.getMonth() - 6);
+                const d = new Date(); d.setMonth(d.getMonth() - 6);
                 const startDate = d.toISOString().split('T')[0];
-
                 const url = `https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockPrice&data_id=${stock.id}&start_date=${startDate}${tokenParam}`;
                 
                 const res = await fetch(url);
@@ -533,140 +820,55 @@
                     if (json.msg === 'success' && json.data.length > 0) {
                         const candles = [];
                         const volumes = [];
-
                         json.data.forEach(row => {
                             const time = row.date;
-                            const open = row.open;
-                            const high = row.max;
-                            const low = row.min;
-                            const close = row.close;
-                            const vol = row.Trading_Volume / 1000;
-
+                            const open = row.open, high = row.max, low = row.min, close = row.close;
                             candles.push({ time, open, high, low, close });
-                            volumes.push({ 
-                                time, value: vol, 
-                                color: close >= open ? '#34A85388' : '#EA433588' 
-                            });
+                            volumes.push({ time, value: row.Trading_Volume / 1000, color: close >= open ? '#EF444488' : '#22C55E88' });
                         });
                         chartData = { candles, volumes };
                     }
                 }
-            } catch (e) {
-                console.log('K線資料抓取失敗，啟用模擬資料。');
-            }
+            } catch (e) {}
 
-            // 若無 API 或抓取失敗，產生模擬資料
-            if (!chartData) {
-                chartData = generateMockChartData(stock.price);
-            }
+            if (!chartData) chartData = generateMockChartData(stock.price);
 
             candlestickSeries.setData(chartData.candles);
             volumeSeries.setData(chartData.volumes);
             chart.timeScale().fitContent();
-            
             loading.classList.add('hidden');
         }
 
         function generateMockChartData(currentPrice) {
-            const candles = [];
-            const volumes = [];
+            const candles = [], volumes = [];
             let p = currentPrice * 0.8; 
-            const d = new Date();
-            d.setDate(d.getDate() - 100);
-
+            const d = new Date(); d.setDate(d.getDate() - 100);
             for (let i = 0; i < 100; i++) {
                 d.setDate(d.getDate() + 1);
-                // 跳過週末
                 if (d.getDay() === 0 || d.getDay() === 6) continue;
-                
                 const t = d.toISOString().split('T')[0];
-                const open = p;
-                const close = open * getRandom(0.96, 1.04);
-                const high = Math.max(open, close) * getRandom(1, 1.03);
-                const low = Math.min(open, close) * getRandom(0.97, 1);
-                const vol = Math.floor(getRandom(1000, 50000));
-
+                const open = p, close = open * getRandom(0.96, 1.04);
+                const high = Math.max(open, close) * getRandom(1, 1.03), low = Math.min(open, close) * getRandom(0.97, 1);
                 candles.push({ time: t, open, high, low, close });
-                volumes.push({ time: t, value: vol, color: close >= open ? '#34A85388' : '#EA433588' });
+                volumes.push({ time: t, value: Math.floor(getRandom(1000, 50000)), color: close >= open ? '#EF444488' : '#22C55E88' });
                 p = close;
             }
             return { candles, volumes };
         }
 
-        // === 資料源與推播設定 ===
         function toggleDataModal() {
             const modal = document.getElementById('data-modal');
             modal.classList.toggle('hidden');
             modal.classList.toggle('flex');
-            
-            if(localStorage.getItem('finmindToken')) {
-                document.getElementById('fm-token').value = localStorage.getItem('finmindToken');
-            }
+            if(localStorage.getItem('finmindToken')) document.getElementById('fm-token').value = localStorage.getItem('finmindToken');
         }
 
         function saveDataSettings() {
-            const token = document.getElementById('fm-token').value;
-            localStorage.setItem('finmindToken', token);
+            localStorage.setItem('finmindToken', document.getElementById('fm-token').value);
             toggleDataModal();
             refreshData();
         }
 
-        function togglePushModal() {
-            const modal = document.getElementById('push-modal');
-            modal.classList.toggle('hidden');
-            modal.classList.toggle('flex');
-            
-            if(localStorage.getItem('tgToken')) document.getElementById('tg-token').value = localStorage.getItem('tgToken');
-            if(localStorage.getItem('tgChatId')) document.getElementById('tg-chatid').value = localStorage.getItem('tgChatId');
-        }
-
-        function savePushSettings() {
-            const token = document.getElementById('tg-token').value;
-            const chatId = document.getElementById('tg-chatid').value;
-            localStorage.setItem('tgToken', token);
-            localStorage.setItem('tgChatId', chatId);
-            togglePushModal();
-        }
-
-        async function testPush() {
-            const token = document.getElementById('tg-token').value;
-            const chatId = document.getElementById('tg-chatid').value;
-            const logEl = document.getElementById('push-log');
-            
-            if(!token || !chatId) {
-                logEl.innerText = '請填寫 Token 與 Chat ID';
-                logEl.className = 'mt-4 text-xs text-g-red h-4';
-                return;
-            }
-
-            const threshold = parseFloat(document.getElementById('param-score').value);
-            const strongStocks = stocksData.filter(s => s.totalScore >= threshold);
-            let msg = `【台股四維狙擊 - 系統通知】\n共篩選出 ${strongStocks.length} 檔強勢股：\n`;
-            strongStocks.forEach(s => msg += `\n${s.id} ${s.name} (評分:${s.totalScore})`);
-
-            logEl.innerText = '發送中...';
-            logEl.className = 'mt-4 text-xs text-g-blue h-4';
-
-            try {
-                const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ chat_id: chatId, text: msg })
-                });
-                if(res.ok) {
-                    logEl.innerText = '發送成功！請檢查 Telegram';
-                    logEl.className = 'mt-4 text-xs text-g-green h-4';
-                } else {
-                    logEl.innerText = '發送失敗，請檢查設定';
-                    logEl.className = 'mt-4 text-xs text-g-red h-4';
-                }
-            } catch (err) {
-                logEl.innerText = '網路錯誤';
-                logEl.className = 'mt-4 text-xs text-g-red h-4';
-            }
-        }
-
-        // === 系統初始化 ===
         window.sortData = function(key) {
             if (currentSort.key === key) currentSort.desc = !currentSort.desc;
             else { currentSort.key = key; currentSort.desc = true; }
@@ -682,12 +884,11 @@
             
             if(!activeSymbol && stocksData.length > 0) {
                 const topStock = [...stocksData].sort((a,b)=>b.totalScore - a.totalScore)[0];
-                loadDetail(topStock);
+                if(topStock) loadDetail(topStock);
             }
         }
 
         document.getElementById('btn-refresh').addEventListener('click', refreshData);
-        document.getElementById('toggle-qualified').addEventListener('change', renderTable);
         ['param-min-change', 'param-max-change', 'param-vol-multi', 'param-score'].forEach(id => {
             document.getElementById(id).addEventListener('change', () => {
                 stocksData = evaluateStocks(stocksData);
@@ -697,7 +898,6 @@
 
         // 啟動
         refreshData();
-
     </script>
 </body>
 </html>
