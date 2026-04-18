@@ -65,20 +65,20 @@
 <body class="bg-white text-gray-800 font-sans min-h-screen flex flex-col">
 
     <!-- 頂部導航 -->
-    <header class="flex items-center justify-between px-3 md:px-6 py-3 md:py-4 border-b border-gray-200 shadow-sm bg-white">
+    <header class="flex flex-wrap items-center justify-between px-2 md:px-6 py-2 md:py-4 border-b border-gray-200 shadow-sm bg-white gap-y-2">
         <div class="flex items-center gap-2 md:gap-3">
             <div class="w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center bg-g-blue text-white font-bold text-sm md:text-lg">S</div>
-            <h1 class="text-lg md:text-2xl font-medium text-gray-700 tracking-wide truncate">台股四維狙擊</h1>
+            <h1 class="text-base md:text-2xl font-medium text-gray-700 tracking-wide truncate">台股四維狙擊</h1>
         </div>
-        <div class="flex items-center gap-2 md:gap-3">
-            <button onclick="toggleFilterModal()" class="flex items-center gap-1 bg-blue-50 text-g-blue hover:bg-blue-100 px-3 md:px-4 py-1.5 md:py-2 rounded text-xs md:text-sm font-bold transition-colors border border-blue-200 shadow-sm">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
-                進階篩選
+        <div class="flex items-center gap-1.5 md:gap-3">
+            <button onclick="toggleFilterModal()" class="flex items-center gap-1 bg-blue-50 text-g-blue hover:bg-blue-100 px-2 md:px-4 py-1 md:py-2 rounded text-[11px] md:text-sm font-bold transition-colors border border-blue-200 shadow-sm whitespace-nowrap">
+                <svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+                <span class="hidden sm:inline">進階</span>篩選
             </button>
-            <button onclick="toggleDataModal()" class="text-gray-600 hover:text-g-blue hover:bg-g-gray px-2 md:px-4 py-1.5 md:py-2 rounded text-xs md:text-sm font-medium transition-colors border border-gray-200 hidden sm:block">
+            <button onclick="toggleDataModal()" class="text-gray-600 hover:text-g-blue hover:bg-g-gray px-2 md:px-4 py-1 md:py-2 rounded text-[11px] md:text-sm font-medium transition-colors border border-gray-200">
                 資料源
             </button>
-            <button id="btn-refresh" class="bg-g-blue hover:bg-blue-600 text-white px-3 md:px-5 py-1.5 md:py-2 rounded text-xs md:text-sm font-medium shadow-sm transition-colors">
+            <button id="btn-refresh" class="bg-g-blue hover:bg-blue-600 text-white px-2 md:px-5 py-1 md:py-2 rounded text-[11px] md:text-sm font-medium shadow-sm transition-colors">
                 更新
             </button>
         </div>
@@ -87,15 +87,16 @@
     <main class="flex-1 p-2 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6 h-auto lg:h-[calc(100vh-80px)]">
         
         <!-- 左側：控制面板、摘要與資料表 -->
-        <div class="lg:col-span-5 flex flex-col gap-3 md:gap-4 h-[65vh] lg:h-full overflow-hidden">
+        <div class="lg:col-span-5 flex flex-col gap-3 md:gap-4 h-[55vh] min-h-[400px] lg:h-full lg:min-h-0 overflow-hidden">
             
             <!-- 參數設定與產業地圖按鈕 -->
             <div class="bg-white border border-gray-200 rounded-lg p-3 md:p-4 shadow-sm flex-shrink-0">
-                <div class="flex items-center justify-between mb-3">
+                <div class="flex flex-wrap items-center justify-between mb-3 gap-2">
                     <h2 class="text-sm font-bold text-gray-600 tracking-wider">策略參數自訂</h2>
-                    <button id="btn-industry-map" onclick="toggleIndustryModal()" class="flex items-center gap-1.5 bg-gray-50 hover:bg-gray-100 text-gray-700 px-3 py-1.5 rounded border border-gray-200 text-xs md:text-sm transition-colors font-medium">
-                        🏭 <span id="current-industry-label">全部產業</span>
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    <button id="btn-industry-map" onclick="toggleIndustryModal()" class="flex items-center gap-1 bg-gray-50 hover:bg-gray-100 text-gray-700 px-2 py-1 md:px-3 md:py-1.5 rounded border border-gray-200 text-[11px] md:text-sm transition-colors font-medium whitespace-nowrap">
+                        <svg class="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                        <span id="current-industry-label">全部產業</span>
+                        <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
                 </div>
                 <div class="grid grid-cols-3 gap-2 md:gap-3">
@@ -119,32 +120,32 @@
             </div>
 
             <!-- 台股篩選摘要面板 -->
-            <div id="summary-panel" class="bg-gray-50 border border-gray-200 rounded-lg p-4 shadow-sm flex-shrink-0 text-sm hidden">
-                <div class="flex items-center gap-2 text-gray-500 text-xs mb-3 border-b pb-2">
-                    <span>📊 資料收盤日期：<span id="sum-date" class="font-medium"></span></span>
-                    <span>|</span>
-                    <span>⏱ 產出時間：<span id="sum-time" class="font-medium"></span></span>
+            <div id="summary-panel" class="bg-gray-50 border border-gray-200 rounded-lg p-3 md:p-4 shadow-sm flex-shrink-0 text-sm hidden">
+                <div class="flex flex-wrap items-center gap-2 text-gray-500 text-[11px] md:text-xs mb-2 md:mb-3 border-b pb-2">
+                    <span>資料日期：<span id="sum-date" class="font-medium"></span></span>
+                    <span class="hidden sm:inline">|</span>
+                    <span>產出時間：<span id="sum-time" class="font-medium"></span></span>
                 </div>
                 <div class="font-bold text-gray-800 mb-2">篩選條件：<span id="sum-condition" class="text-g-blue">無</span></div>
                 <div class="mb-3 text-gray-700">自板塊 <span id="sum-total" class="font-bold"></span> 支中，篩選出 <span id="sum-matched" class="font-bold text-g-blue text-base"></span> 支完全符合</div>
                 
                 <div class="space-y-1 text-xs md:text-sm">
-                    <div class="text-gray-600 flex"><span class="w-16 flex-shrink-0">強勢代號：</span><span id="sum-strong" class="font-medium text-gray-800 truncate"></span></div>
-                    <div class="text-gray-600 flex"><span class="w-16 flex-shrink-0">表現最佳：</span><span id="sum-best" class="font-bold text-red-500"></span></div>
-                    <div class="text-gray-600 flex"><span class="w-16 flex-shrink-0">表現最弱：</span><span id="sum-worst" class="font-bold text-green-500"></span></div>
+                    <div class="text-gray-600 flex items-start"><span class="w-16 flex-shrink-0">強勢代號：</span><span id="sum-strong" class="font-medium text-gray-800 flex-1 break-words"></span></div>
+                    <div class="text-gray-600 flex items-start"><span class="w-16 flex-shrink-0">表現最佳：</span><span id="sum-best" class="font-bold text-red-500 flex-1 break-words"></span></div>
+                    <div class="text-gray-600 flex items-start"><span class="w-16 flex-shrink-0">表現最弱：</span><span id="sum-worst" class="font-bold text-green-500 flex-1 break-words"></span></div>
                 </div>
             </div>
 
             <!-- 數據表格 -->
             <div class="bg-white border border-gray-200 rounded-lg shadow-sm flex-1 overflow-hidden flex flex-col">
-                <div class="overflow-y-auto no-scrollbar flex-1 relative">
+                <div class="overflow-y-auto overflow-x-auto no-scrollbar flex-1 relative">
                     <table class="w-full whitespace-nowrap text-left border-collapse">
-                        <thead class="bg-g-gray sticky top-0 z-10 border-b border-gray-200 text-[11px] md:text-xs text-gray-600">
+                        <thead class="bg-g-gray sticky top-0 z-10 border-b border-gray-200 text-[10px] md:text-xs text-gray-600">
                             <tr>
-                                <th class="p-2 md:px-4 md:py-3 cursor-pointer hover:bg-gray-200" onclick="sortData('id')">代號/名稱 ⇅</th>
-                                <th class="p-2 md:px-4 md:py-3 cursor-pointer hover:bg-gray-200 text-right" onclick="sortData('price')">股價/漲幅 ⇅</th>
-                                <th class="p-2 md:px-4 md:py-3 text-center">結/動/籌</th>
-                                <th class="p-2 md:px-4 md:py-3 cursor-pointer hover:bg-gray-200 text-right md:text-left" onclick="sortData('totalScore')">評分 ⇅</th>
+                                <th class="px-2 py-2 md:px-4 md:py-3 cursor-pointer hover:bg-gray-200 whitespace-nowrap" onclick="sortData('id')">代號/名稱 ⇅</th>
+                                <th class="px-2 py-2 md:px-4 md:py-3 cursor-pointer hover:bg-gray-200 text-right whitespace-nowrap" onclick="sortData('price')">股價/漲幅 ⇅</th>
+                                <th class="px-1 py-2 md:px-4 md:py-3 text-center whitespace-nowrap">結/動/籌</th>
+                                <th class="px-2 py-2 md:px-4 md:py-3 cursor-pointer hover:bg-gray-200 text-right md:text-left whitespace-nowrap" onclick="sortData('totalScore')">評分 ⇅</th>
                             </tr>
                         </thead>
                         <tbody id="stock-table-body" class="divide-y divide-gray-100 text-sm">
@@ -159,8 +160,8 @@
         </div>
 
         <!-- 右側：K線圖表與詳細資訊 -->
-        <div class="lg:col-span-7 flex flex-col gap-3 md:gap-4 h-[70vh] lg:h-full">
-            <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-3 md:p-4 flex-shrink-0 flex justify-between items-center">
+        <div class="lg:col-span-7 flex flex-col gap-3 md:gap-4 h-[60vh] min-h-[450px] lg:h-full lg:min-h-0">
+            <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-3 md:p-4 flex-shrink-0 flex flex-wrap justify-between items-center gap-2">
                 <div>
                     <h2 id="detail-title" class="text-xl font-bold text-gray-800">請選擇股票</h2>
                     <div id="detail-subtitle" class="text-sm text-gray-500 mt-1">點擊左側列表以載入 K 線圖與進出場建議</div>
@@ -182,15 +183,15 @@
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 md:gap-4 text-xs md:text-sm">
                     <div class="bg-blue-50 p-2 md:p-3 rounded flex sm:block justify-between items-center">
                         <div class="text-g-blue font-bold sm:mb-1">建議進場點</div>
-                        <div id="tip-entry" class="text-gray-800 text-sm md:text-lg">--</div>
+                        <div id="tip-entry" class="text-gray-800 text-[13px] md:text-lg font-medium">--</div>
                     </div>
                     <div class="bg-red-50 p-2 md:p-3 rounded flex sm:block justify-between items-center">
                         <div class="text-g-red font-bold sm:mb-1">嚴格停損 (-3%)</div>
-                        <div id="tip-stoploss" class="text-gray-800 text-sm md:text-lg">--</div>
+                        <div id="tip-stoploss" class="text-gray-800 text-[13px] md:text-lg font-medium">--</div>
                     </div>
                     <div class="bg-green-50 p-2 md:p-3 rounded flex sm:block justify-between items-center">
                         <div class="text-g-green font-bold sm:mb-1">波段停利 (+6%~10%)</div>
-                        <div id="tip-takeprofit" class="text-gray-800 text-sm md:text-lg">--</div>
+                        <div id="tip-takeprofit" class="text-gray-800 text-[13px] md:text-lg font-medium">--</div>
                     </div>
                 </div>
             </div>
@@ -198,21 +199,21 @@
     </main>
 
     <!-- 產業地圖 Modal -->
-    <div id="industry-modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 overflow-y-auto pt-10 pb-10">
-        <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl p-5 md:p-8 mx-4">
-            <div class="flex justify-between items-center mb-6 border-b pb-3">
-                <h2 class="text-xl md:text-2xl font-bold text-gray-800">全板塊產業地圖分類</h2>
-                <button onclick="toggleIndustryModal()" class="text-gray-400 hover:text-gray-800">
+    <div id="industry-modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl flex flex-col max-h-[90vh]">
+            <div class="flex justify-between items-center p-4 md:p-6 border-b flex-shrink-0">
+                <h2 class="text-lg md:text-2xl font-bold text-gray-800">全板塊產業地圖分類</h2>
+                <button onclick="toggleIndustryModal()" class="text-gray-400 hover:text-gray-800 p-1">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
 
-            <div class="mb-4">
-                <button onclick="selectIndustry('全部', '全部')" class="industry-btn active w-full py-2 rounded text-sm border hover:bg-gray-50 transition-colors">🌐 顯示台股全市場</button>
-            </div>
+            <div class="p-4 md:p-6 overflow-y-auto">
+                <div class="mb-4">
+                    <button onclick="selectIndustry('全部', '全部')" class="industry-btn active w-full py-2 rounded text-sm border hover:bg-gray-50 transition-colors font-bold">顯示台股全市場</button>
+                </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- 半導體板塊 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="bg-blue-50/50 border border-blue-100 rounded-lg p-4">
                     <h3 class="font-bold text-lg text-blue-900 mb-3 flex items-center gap-2">
                         <span class="w-2 h-6 bg-blue-500 rounded"></span> 半導體產業鏈
@@ -239,31 +240,31 @@
                     </div>
                 </div>
             </div>
+            </div>
             
-            <div class="mt-6 text-right">
-                <button onclick="toggleIndustryModal()" class="bg-g-blue text-white px-6 py-2 rounded shadow hover:bg-blue-600 font-medium">關閉地圖</button>
+            <div class="p-4 md:p-6 border-t flex-shrink-0 text-right bg-gray-50 rounded-b-lg">
+                <button onclick="toggleIndustryModal()" class="bg-g-blue text-white px-6 py-2 rounded shadow hover:bg-blue-600 font-medium text-sm md:text-base">關閉地圖</button>
             </div>
         </div>
     </div>
 
     <!-- 進階篩選器 Modal -->
-    <div id="filter-modal" class="fixed inset-0 bg-black/60 hidden items-start md:items-center justify-center z-50 overflow-y-auto pt-10 pb-10">
-        <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl p-5 md:p-8 mx-4">
-            <div class="flex justify-between items-center mb-6 border-b pb-3">
-                <h2 class="text-xl md:text-2xl font-bold text-gray-800">策略篩選條件</h2>
-                <div class="flex items-center gap-3">
-                    <button onclick="clearFilter()" class="text-sm text-gray-500 hover:text-gray-800">清除條件</button>
-                    <button onclick="toggleFilterModal()" class="text-gray-400 hover:text-gray-800">
+    <div id="filter-modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl flex flex-col max-h-[90vh]">
+            <div class="flex justify-between items-center p-4 md:p-6 border-b flex-shrink-0">
+                <h2 class="text-lg md:text-2xl font-bold text-gray-800">策略篩選條件</h2>
+                <div class="flex items-center gap-2 md:gap-3">
+                    <button onclick="clearFilter()" class="text-xs md:text-sm text-gray-500 hover:text-gray-800 px-2 py-1 bg-gray-100 rounded">清除</button>
+                    <button onclick="toggleFilterModal()" class="text-gray-400 hover:text-gray-800 p-1">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     </button>
                 </div>
             </div>
 
-            <div class="mb-8">
-                <h3 class="text-sm font-bold text-gray-700 mb-3">簡易篩選條件</h3>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <div onclick="applyFilter('適合買進', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
-                        <div class="flex justify-between items-start mb-1">
+            <div class="p-4 md:p-6 overflow-y-auto">
+                <div class="mb-8">
+                    <h3 class="text-sm font-bold text-gray-700 mb-3">簡易篩選條件</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                             <span class="font-bold text-gray-800">適合買進</span>
                             <span class="bg-red-50 text-red-500 text-[10px] px-1.5 py-0.5 rounded font-bold">買入</span>
                         </div>
@@ -340,17 +341,18 @@
                     </div>
                 </div>
             </div>
+            </div>
 
-            <div class="mt-8 text-right">
-                <button onclick="toggleFilterModal()" class="bg-g-blue text-white px-6 py-2 rounded shadow hover:bg-blue-600 font-medium">確認並關閉</button>
+            <div class="p-4 md:p-6 border-t flex-shrink-0 text-right bg-gray-50 rounded-b-lg">
+                <button onclick="toggleFilterModal()" class="bg-g-blue text-white px-6 py-2 rounded shadow hover:bg-blue-600 font-medium text-sm md:text-base">確認</button>
             </div>
         </div>
     </div>
 
-    <!-- API 設定 Modal (保持不變) -->
-    <div id="data-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
-        <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6 mx-4">
-            <h2 class="text-xl font-bold text-gray-800 mb-4">FinMind 資料源設定</h2>
+    <!-- API 設定 Modal -->
+    <div id="data-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-5 md:p-6 flex flex-col">
+            <h2 class="text-lg md:text-xl font-bold text-gray-800 mb-4">FinMind 資料源設定</h2>
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">FinMind Token (選填)</label>
@@ -674,26 +676,26 @@
                 };
                 
                 tr.innerHTML = `
-                    <td class="p-2 md:px-4 md:py-3">
-                        <div class="font-bold text-gray-800 text-xs md:text-sm">${stock.id}</div>
-                        <div class="text-gray-500 text-[10px] md:text-xs">${stock.name}</div>
+                    <td class="px-2 py-2 md:px-4 md:py-3 whitespace-nowrap">
+                        <div class="font-bold text-gray-800 text-[11px] md:text-sm">${stock.id}</div>
+                        <div class="text-gray-500 text-[9px] md:text-xs">${stock.name}</div>
                     </td>
-                    <td class="p-2 md:px-4 md:py-3 text-right">
-                        <div class="font-bold ${color} text-xs md:text-sm">${stock.price.toFixed(1)}</div>
-                        <div class="text-[10px] md:text-xs ${color}">${sign}${stock.changePercent}%</div>
+                    <td class="px-2 py-2 md:px-4 md:py-3 text-right whitespace-nowrap">
+                        <div class="font-bold ${color} text-[11px] md:text-sm">${stock.price.toFixed(1)}</div>
+                        <div class="text-[9px] md:text-xs ${color}">${sign}${stock.changePercent}%</div>
                     </td>
-                    <td class="p-2 md:px-4 md:py-3 text-center">
-                        <div class="flex justify-center gap-0.5 md:gap-1">
+                    <td class="px-1 py-2 md:px-4 md:py-3 text-center whitespace-nowrap">
+                        <div class="flex justify-center gap-1">
                             <div class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${stock.passStructure ? 'bg-red-500' : 'bg-gray-300'}"></div>
                             <div class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${stock.passMomentum ? 'bg-red-500' : 'bg-gray-300'}"></div>
                             <div class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${stock.scoreChips >= 40 ? 'bg-red-500' : (stock.scoreChips >= 20 ? 'bg-g-yellow' : 'bg-gray-300')}"></div>
                         </div>
                     </td>
-                    <td class="p-2 md:px-4 md:py-3">
-                        <div class="flex items-center justify-end md:justify-start gap-2">
-                            <span class="font-bold text-gray-700 text-xs md:text-sm w-6 md:w-8 text-right md:text-left">${stock.totalScore}</span>
-                            <div class="hidden md:block w-16 bg-gray-200 rounded-full h-2">
-                                <div class="${stock.totalScore >= 90 ? 'bg-red-500' : 'bg-g-blue'} h-2 rounded-full" style="width: ${(stock.totalScore/130)*100}%"></div>
+                    <td class="px-2 py-2 md:px-4 md:py-3 whitespace-nowrap">
+                        <div class="flex items-center justify-end md:justify-start gap-1.5">
+                            <span class="font-bold text-gray-700 text-[11px] md:text-sm w-5 md:w-8 text-right md:text-left">${stock.totalScore}</span>
+                            <div class="hidden sm:block w-12 md:w-16 bg-gray-200 rounded-full h-1.5 md:h-2">
+                                <div class="${stock.totalScore >= 90 ? 'bg-red-500' : 'bg-g-blue'} h-1.5 md:h-2 rounded-full" style="width: ${(stock.totalScore/130)*100}%"></div>
                             </div>
                         </div>
                     </td>
