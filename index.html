@@ -3,10 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>台股四維狙擊選股系統</title>
+    <title>台股四維狙擊選股系統 (FinMind API)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
     <script>
+        // 攔截並隱藏瀏覽器無害的 ResizeObserver 錯誤
+        window.addEventListener('error', function(e) {
+            if (e.message === 'ResizeObserver loop completed with undelivered notifications.' || 
+                e.message === 'ResizeObserver loop limit exceeded') {
+                e.stopImmediatePropagation();
+            }
+        });
+
         tailwind.config = {
             theme: {
                 extend: {
@@ -22,44 +30,15 @@
         }
     </script>
     <style>
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-        tr {
-            transition: background-color 0.2s ease;
-        }
-        tr:hover {
-            background-color: #F3F4F6;
-        }
-        .selected-row {
-            background-color: #E8F0FE;
-            border-left: 4px solid #4285F4;
-        }
-        .g-input {
-            border: 1px solid #DADCE0;
-            border-radius: 4px;
-            padding: 8px 12px;
-            outline: none;
-            transition: border 0.2s;
-        }
-        .g-input:focus {
-            border: 2px solid #4285F4;
-            padding: 7px 11px;
-        }
-        .filter-card.active {
-            border-color: #4285F4;
-            background-color: #F8F9FA;
-            box-shadow: 0 0 0 1px #4285F4;
-        }
-        .industry-btn.active {
-            background-color: #4285F4;
-            color: white;
-            border-color: #4285F4;
-        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        tr { transition: background-color 0.2s ease; }
+        tr:hover { background-color: #F3F4F6; }
+        .selected-row { background-color: #E8F0FE; border-left: 4px solid #4285F4; }
+        .g-input { border: 1px solid #DADCE0; border-radius: 4px; padding: 8px 12px; outline: none; transition: border 0.2s; }
+        .g-input:focus { border: 2px solid #4285F4; padding: 7px 11px; }
+        .filter-card.active { border-color: #4285F4; background-color: #F8F9FA; box-shadow: 0 0 0 1px #4285F4; }
+        .industry-btn.active { background-color: #4285F4; color: white; border-color: #4285F4; }
     </style>
 </head>
 <body class="bg-white text-gray-800 font-sans min-h-screen flex flex-col">
@@ -67,7 +46,7 @@
     <header class="flex flex-wrap items-center justify-between px-2 md:px-6 py-2 md:py-4 border-b border-gray-200 shadow-sm bg-white gap-y-2">
         <div class="flex items-center gap-2 md:gap-3">
             <div class="w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center bg-g-blue text-white font-bold text-sm md:text-lg">S</div>
-            <h1 class="text-base md:text-2xl font-medium text-gray-700 tracking-wide truncate">台股四維狙擊</h1>
+            <h1 class="text-base md:text-2xl font-medium text-gray-700 tracking-wide truncate">台股四維狙擊 <span class="text-xs text-gray-400 font-normal">Powered by FinMind API</span></h1>
         </div>
         <div class="flex items-center gap-1.5 md:gap-3">
             <button onclick="toggleFilterModal()" class="flex items-center gap-1 bg-blue-50 text-g-blue hover:bg-blue-100 px-2 md:px-4 py-1 md:py-2 rounded text-[11px] md:text-sm font-bold transition-colors border border-blue-200 shadow-sm whitespace-nowrap">
@@ -123,15 +102,15 @@
                     <span class="hidden sm:inline">|</span>
                     <span>產出時間：<span id="sum-time" class="font-medium"></span></span>
                 </div>
-                <div class="font-bold text-gray-800 mb-2">篩選條件：<span id="sum-condition" class="text-g-blue">無</span></div>
+                <div class="font-bold text-gray-800 mb-2">篩選條件：<span id="sum-condition" class="text-g-blue leading-relaxed">無</span></div>
                 <div class="mb-3 text-gray-700">自板塊 <span id="sum-total" class="font-bold"></span> 支中，篩選出 <span id="sum-matched" class="font-bold text-g-blue text-base"></span> 支完全符合</div>
                 
                 <div class="space-y-3 text-xs md:text-sm">
-                    <div class="text-gray-600 flex flex-col sm:flex-row sm:items-start w-full gap-1 sm:gap-0">
+                    <div class="text-gray-600 flex flex-col sm:flex-row sm:items-start w-full gap-1.5 sm:gap-0">
                         <span class="whitespace-nowrap sm:mt-1 text-gray-500 font-bold">強勢代號：</span>
-                        <div id="sum-strong" class="font-medium text-gray-800 flex-1 sm:ml-2 flex flex-wrap gap-1.5 items-center"></div>
+                        <div id="sum-strong" class="font-medium text-gray-800 flex-1 sm:ml-2 flex flex-wrap gap-2 items-center"></div>
                     </div>
-                    <div class="text-gray-600 flex flex-col sm:flex-row sm:items-start w-full gap-1 sm:gap-0">
+                    <div class="text-gray-600 flex flex-col sm:flex-row sm:items-start w-full gap-1 sm:gap-0 mt-2">
                         <span class="whitespace-nowrap sm:mt-0.5 text-gray-500 font-bold">表現最佳：</span>
                         <span id="sum-best" class="font-bold text-red-500 flex-1 break-words leading-relaxed sm:ml-2"></span>
                     </div>
@@ -156,8 +135,9 @@
                         <tbody id="stock-table-body" class="divide-y divide-gray-100 text-sm">
                         </tbody>
                     </table>
-                    <div id="loading-state" class="hidden absolute inset-0 bg-white/80 flex items-center justify-center text-g-blue font-medium z-20">
-                        資料運算中...
+                    <div id="loading-state" class="hidden absolute inset-0 bg-white/90 flex flex-col items-center justify-center text-g-blue font-medium z-20 gap-3">
+                        <svg class="animate-spin h-8 w-8 text-g-blue" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        <span id="loading-text" class="text-sm">連線 FinMind API 抓取中... (無金鑰可能觸發備用模擬資料)</span>
                     </div>
                 </div>
             </div>
@@ -176,7 +156,10 @@
             </div>
             
             <div class="bg-white border border-gray-200 rounded-lg shadow-sm flex-1 p-1 relative">
-                <div id="chart-loading" class="hidden absolute inset-0 bg-white/90 flex items-center justify-center text-g-blue font-medium z-10">載入 K 線資料中...</div>
+                <div id="chart-loading" class="hidden absolute inset-0 bg-white/90 flex flex-col items-center justify-center text-g-blue font-medium z-10 gap-2">
+                    <svg class="animate-spin h-6 w-6 text-g-blue" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    載入 K 線資料中...
+                </div>
                 <div id="tv_chart_container" class="w-full h-full min-h-[400px]"></div>
             </div>
 
@@ -253,7 +236,7 @@
     <div id="filter-modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4">
         <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl flex flex-col max-h-[90vh]">
             <div class="flex justify-between items-center p-4 md:p-6 border-b flex-shrink-0">
-                <h2 class="text-lg md:text-2xl font-bold text-gray-800">策略篩選條件 (AND聯集)</h2>
+                <h2 class="text-lg md:text-2xl font-bold text-gray-800">策略篩選條件 (AND 交集)</h2>
                 <div class="flex items-center gap-2 md:gap-3">
                     <button onclick="clearFilter()" class="text-xs md:text-sm text-gray-500 hover:text-gray-800 px-2 py-1 bg-gray-100 rounded">清除全部</button>
                     <button onclick="toggleFilterModal()" class="text-gray-400 hover:text-gray-800 p-1">
@@ -333,14 +316,14 @@
                                 <span class="font-bold text-gray-800">MACD 翻多</span>
                                 <span class="bg-red-50 text-red-500 text-[10px] px-1.5 py-0.5 rounded font-bold">買入</span>
                             </div>
-                            <div class="text-xs text-gray-500">柱狀由負轉正</div>
+                            <div class="text-xs text-gray-500">柱狀大於零</div>
                         </div>
                         <div onclick="applyFilter('MACD 翻空', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
                             <div class="flex justify-between items-start mb-1">
                                 <span class="font-bold text-gray-800">MACD 翻空</span>
                                 <span class="bg-green-50 text-green-600 text-[10px] px-1.5 py-0.5 rounded font-bold">賣出</span>
                             </div>
-                            <div class="text-xs text-gray-500">柱狀由正轉負</div>
+                            <div class="text-xs text-gray-500">柱狀小於零</div>
                         </div>
                     </div>
                 </div>
@@ -352,10 +335,15 @@
         </div>
     </div>
 
+    <!-- API 設定 Modal -->
     <div id="data-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
         <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-5 md:p-6 flex flex-col">
             <h2 class="text-lg md:text-xl font-bold text-gray-800 mb-4">FinMind 資料源設定</h2>
             <div class="space-y-4">
+                <div class="text-sm text-gray-600 bg-blue-50 p-3 rounded">
+                    目前已串接 <strong>FinMind API</strong> 取得即時與歷史 K 線數據。<br><br>
+                    為保護您的帳號安全，系統不會內建任何金鑰。請填寫您專屬的 Token 避免免費公開額度限制。若未設定或超出頻率，系統會自動使用備用模擬數據保持正常運作。
+                </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">FinMind Token (選填)</label>
                     <input type="password" id="fm-token" placeholder="請輸入 FinMind Token" class="g-input w-full text-sm">
@@ -423,18 +411,16 @@
         const getBool = (chance = 0.5) => Math.random() < chance;
 
         function generateMockStockData(stock, index = 0) {
-            // 將約三分之一的股票強制賦予「強勢狀態」，確保篩選結果不會完全空白
             const forceStrong = index % 3 === 0;
-            
             const price = parseFloat(getRandom(50, 800).toFixed(1));
             const changePercent = forceStrong ? parseFloat(getRandom(2, 9.5).toFixed(2)) : parseFloat(getRandom(-4, 5).toFixed(2));
             const isStrong = forceStrong || changePercent > 1;
-            
-            const ma20 = price * (isStrong ? getRandom(0.92, 0.98) : getRandom(0.95, 1.08)); 
+
+            const ma20 = price * (isStrong ? getRandom(0.92, 0.98) : getRandom(0.95, 1.08));
             const ma60 = price * (isStrong ? getRandom(0.85, 0.95) : getRandom(0.85, 1.15));
             const volume = Math.floor(getRandom(2000, 50000));
             const avgVolume5d = isStrong ? volume / getRandom(1.5, 2.5) : volume * getRandom(0.8, 1.2);
-            
+
             return {
                 ...stock,
                 price, changePercent, volume, avgVolume5d,
@@ -445,83 +431,143 @@
                 ma20, ma60,
                 high20d: isStrong ? price * getRandom(0.98, 1.01) : price * getRandom(1.05, 1.2),
                 bias: ((price - ma20) / ma20) * 100,
-                macd: isStrong ? getRandom(0.5, 2) : getRandom(-1, 0.5),
+                macdHist: isStrong ? getRandom(0.5, 2) : getRandom(-1, 0.5),
                 rsi: isStrong ? getRandom(55, 85) : getRandom(15, 45),
-                foreignBuy3d: isStrong ? getBool(0.8) : getBool(0.3),
-                trustBuy: isStrong ? getBool(0.7) : getBool(0.2),
-                marginDecrease: isStrong ? getBool(0.6) : getBool(0.4),
-                retailDecrease: isStrong ? getBool(0.6) : getBool(0.4),
-                largeHolderIncrease: isStrong ? getBool(0.7) : getBool(0.3),
-                top10Concentrated: isStrong ? getBool(0.6) : getBool(0.3)
+                foreignBuy3d: isStrong ? getBool(0.7) : getBool(0.3),
+                trustBuy: isStrong ? getBool(0.7) : getBool(0.3),
+                marginDecrease: false, retailDecrease: false,
+                largeHolderIncrease: false, top10Concentrated: false,
+                isMock: true
             };
         }
 
         async function fetchStockData() {
-            try {
-                const token = localStorage.getItem('finmindToken');
-                const tokenParam = token ? `&token=${token}` : '';
-                const d = new Date(); d.setDate(d.getDate() - 100);
-                const startDate = d.toISOString().split('T')[0];
+            const finalData = [];
+            const batchSize = 5; 
+            const token = localStorage.getItem('finmindToken') || '';
+            const tokenParam = token ? `&token=${token}` : '';
 
-                const promises = stockPool.map(async (stock, index) => {
-                    const url = `https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockPrice&data_id=${stock.id}&start_date=${startDate}${tokenParam}`;
-                    const res = await fetch(url);
-                    const json = await res.json();
-                    
-                    if (json.msg === 'success' && json.data.length > 0) {
-                        const quotes = json.data;
-                        const latest = quotes[quotes.length - 1];
-                        const prev = quotes.length > 1 ? quotes[quotes.length - 2] : latest;
+            const d = new Date(); d.setDate(d.getDate() - 100);
+            const startDate = d.toISOString().split('T')[0];
+            const instD = new Date(); instD.setDate(instD.getDate() - 10);
+            const instStartDate = instD.toISOString().split('T')[0];
 
-                        const price = latest.close;
-                        const changePercent = prev.close ? ((price - prev.close) / prev.close) * 100 : 0;
-                        const volume = latest.Trading_Volume / 1000;
-                        const yesterdayVolume = prev.Trading_Volume / 1000;
+            for (let i = 0; i < stockPool.length; i += batchSize) {
+                const batch = stockPool.slice(i, i + batchSize);
+                const promises = batch.map(async (stock, batchIdx) => {
+                    try {
+                        const urlPrice = `https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockPrice&data_id=${stock.id}&start_date=${startDate}${tokenParam}`;
+                        const urlInst = `https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockInstitutionalInvestorsBuySell&data_id=${stock.id}&start_date=${instStartDate}${tokenParam}`;
 
-                        const getMA = (days) => {
-                            if (quotes.length < days) return price;
-                            const slice = quotes.slice(-days);
-                            return slice.reduce((a, b) => a + b.close, 0) / days;
-                        };
+                        const [resPrice, resInst] = await Promise.all([
+                            fetch(urlPrice).then(r => r.json()).catch(() => ({ msg: 'error', data: [] })),
+                            fetch(urlInst).then(r => r.json()).catch(() => ({ msg: 'error', data: [] }))
+                        ]);
 
-                        const ma20 = getMA(20);
-                        
-                        // 當 API 指標不足時，套用部分模擬偏誤確保篩選功能可驗證
-                        const forceStrong = index % 3 === 0;
-                        const isStrong = forceStrong || changePercent > 1;
+                        if (resPrice.msg === 'success' && resPrice.data && resPrice.data.length > 0) {
+                            const quotes = resPrice.data;
+                            const latest = quotes[quotes.length - 1];
+                            const prev = quotes.length > 1 ? quotes[quotes.length - 2] : latest;
 
-                        return {
-                            ...stock,
-                            price, changePercent: parseFloat(changePercent.toFixed(2)), volume,
-                            avgVolume5d: quotes.slice(-5).reduce((a,b)=>a+(b.Trading_Volume/1000), 0)/5,
-                            yesterdayVolume,
-                            estVolume: volume * 1.1,
-                            ma5: getMA(5), ma10: getMA(10), ma20, ma60: getMA(60),
-                            high20d: quotes.slice(-20).reduce((max, b) => Math.max(max, b.max), 0),
-                            bias: ((price - ma20) / ma20) * 100,
-                            macd: isStrong ? getRandom(0.5, 2) : getRandom(-1, 0.5),
-                            rsi: isStrong ? getRandom(55, 85) : getRandom(15, 45),
-                            foreignBuy3d: isStrong ? getBool(0.7) : getBool(0.3),
-                            trustBuy: isStrong ? getBool(0.7) : getBool(0.3),
-                            marginDecrease: isStrong ? getBool(0.6) : getBool(0.4),
-                            retailDecrease: isStrong ? getBool(0.6) : getBool(0.4),
-                            largeHolderIncrease: isStrong ? getBool(0.7) : getBool(0.3),
-                            top10Concentrated: isStrong ? getBool(0.6) : getBool(0.3)
-                        };
+                            const price = latest.close;
+                            const changePercent = prev.close ? ((price - prev.close) / prev.close) * 100 : 0;
+                            const volume = latest.Trading_Volume / 1000;
+                            const yesterdayVolume = prev.Trading_Volume / 1000;
+
+                            const closePrices = quotes.map(q => q.close);
+
+                            const getMA = (days) => {
+                                if (quotes.length < days) return price;
+                                const slice = quotes.slice(-days);
+                                return slice.reduce((a, b) => a + b.close, 0) / days;
+                            };
+
+                            const ma20 = getMA(20);
+
+                            let rsi = 50;
+                            if (closePrices.length >= 15) {
+                                let gains = 0, losses = 0;
+                                for (let k = 1; k <= 14; k++) {
+                                    const diff = closePrices[closePrices.length - 15 + k] - closePrices[closePrices.length - 15 + k - 1];
+                                    if (diff >= 0) gains += diff; else losses -= diff;
+                                }
+                                let avgGain = gains / 14;
+                                let avgLoss = losses / 14;
+                                if (avgLoss !== 0) {
+                                    const rs = avgGain / avgLoss;
+                                    rsi = 100 - (100 / (1 + rs));
+                                } else rsi = 100;
+                            }
+
+                            const ema = (data, period) => {
+                                const k = 2 / (period + 1);
+                                let emaVal = data[0];
+                                const resultArr = [emaVal];
+                                for (let k = 1; k < data.length; k++) {
+                                    emaVal = data[k] * k + emaVal * (1 - k);
+                                    resultArr.push(emaVal);
+                                }
+                                return resultArr;
+                            };
+                            
+                            let macdHist = 0;
+                            if (closePrices.length >= 35) {
+                                const ema12 = ema(closePrices, 12);
+                                const ema26 = ema(closePrices, 26);
+                                const macdLine = closePrices.map((_, idx) => ema12[idx] - ema26[idx]);
+                                const signalLine = ema(macdLine, 9);
+                                macdHist = macdLine[macdLine.length - 1] - signalLine[signalLine.length - 1];
+                            }
+
+                            let foreignBuy3d = false;
+                            let trustBuy = false;
+
+                            if (resInst.msg === 'success' && resInst.data && resInst.data.length > 0) {
+                                const instData = resInst.data;
+                                const latestDate = instData[instData.length - 1].date;
+                                const latestData = instData.filter(d => d.date === latestDate);
+
+                                const foreign = latestData.find(d => d.name === 'Foreign_Investor');
+                                const trust = latestData.find(d => d.name === 'Investment_Trust');
+
+                                if (foreign && (foreign.buy - foreign.sell > 0)) foreignBuy3d = true;
+                                if (trust && (trust.buy - trust.sell > 0)) trustBuy = true;
+                            }
+
+                            return {
+                                ...stock,
+                                price, changePercent: parseFloat(changePercent.toFixed(2)), volume,
+                                avgVolume5d: quotes.slice(-5).reduce((a,b)=>a+(b.Trading_Volume/1000), 0)/5,
+                                yesterdayVolume,
+                                estVolume: volume * 1.1,
+                                ma5: getMA(5), ma10: getMA(10), ma20, ma60: getMA(60),
+                                high20d: Math.max(...quotes.slice(-20).map(v => v.max)),
+                                bias: ((price - ma20) / ma20) * 100,
+                                macdHist, rsi,
+                                foreignBuy3d, trustBuy,
+                                marginDecrease: false, retailDecrease: false,
+                                largeHolderIncrease: false, top10Concentrated: false,
+                                isMock: false
+                            };
+                        }
+                        throw new Error('API Rate Limit or Empty Data');
+                    } catch (e) {
+                        return generateMockStockData(stock, i + batchIdx);
                     }
-                    throw new Error('No Data');
                 });
 
                 const results = await Promise.allSettled(promises);
-                const finalData = [];
-                results.forEach((res, index) => {
-                    if (res.status === 'fulfilled') finalData.push(res.value);
-                    else finalData.push(generateMockStockData(stockPool[index], index));
+                results.forEach((res) => {
+                    if (res.status === 'fulfilled' && res.value) {
+                        finalData.push(res.value);
+                    }
                 });
-                return finalData;
-            } catch (e) {
-                return stockPool.map((stock, index) => generateMockStockData(stock, index));
+
+                if (i + batchSize < stockPool.length) {
+                    await new Promise(r => setTimeout(r, 600)); 
+                }
             }
+            return finalData;
         }
 
         function evaluateStocks(data) {
@@ -531,55 +577,44 @@
             const threshold = parseFloat(document.getElementById('param-score').value) || 80;
 
             return data.map(s => {
-                // 部分給分機制 (讓總分呈現常態分佈，使篩選更具真實感)
-                let sCond = 0;
-                if(s.price > s.ma20 && s.price > s.ma60) sCond++;
-                const maMax = Math.max(s.ma5, s.ma10, s.ma20);
-                const maMin = Math.min(s.ma5, s.ma10, s.ma20);
-                if(((maMax - maMin) / maMin) < 0.05) sCond++; 
-                if(s.volume > (s.avgVolume5d * volMulti)) sCond++;
-                if(s.price >= s.high20d * 0.98) sCond++;
-
-                const scoreStructure = Math.min(30, sCond * 10);
+                let scoreStructure = 0;
+                if (s.price > s.ma20) scoreStructure += 10;
+                if (s.price > s.ma60) scoreStructure += 10;
+                if (s.ma5 > s.ma10 && s.ma10 > s.ma20) scoreStructure += 10;
+                if (s.price >= s.high20d * 0.95) scoreStructure += 10; 
+                
                 const passStructure = scoreStructure >= 20;
 
-                let mCond = 0;
-                if(s.changePercent >= minChg && s.changePercent <= maxChg) mCond++;
-                if(s.estVolume > s.yesterdayVolume * 1.2) mCond++;
-                if(s.price >= s.ma20) mCond++;
-                if(s.bias > -5 && s.bias < 12) mCond++;
-                if(s.macd > -0.5) mCond++;
+                let scoreMomentum = 0;
+                if (s.changePercent >= minChg && s.changePercent <= maxChg) scoreMomentum += 20;
+                if (s.volume >= s.avgVolume5d * volMulti) scoreMomentum += 20;
+                if (s.macdHist > 0) scoreMomentum += 10;
+                if (s.rsi > 50) scoreMomentum += 10;
                 
-                const scoreMomentum = Math.min(40, mCond * 8);
-                const passMomentum = scoreMomentum >= 24;
+                const passMomentum = scoreMomentum >= 30;
 
                 let scoreChips = 0;
-                if(s.foreignBuy3d) scoreChips += 10;
-                if(s.trustBuy) scoreChips += 10;
-                if(s.marginDecrease) scoreChips += 10;
-                if(s.retailDecrease) scoreChips += 10;
-                if(s.largeHolderIncrease) scoreChips += 10;
-                if(s.top10Concentrated) scoreChips += 10;
+                if (s.foreignBuy3d) scoreChips += 15;
+                if (s.trustBuy) scoreChips += 15;
 
                 const totalScore = scoreStructure + scoreMomentum + scoreChips;
 
                 let matchCondition = true;
                 
-                // 複選 AND 嚴格比對機制
                 if (currentFilters.length > 0) {
                     for (let filter of currentFilters) {
                         let passThisFilter = false;
                         switch (filter) {
-                            case '適合買進': passThisFilter = (s.price > s.ma20 && totalScore >= threshold); break;
-                            case '考慮賣出': passThisFilter = (s.price < s.ma20 && totalScore < 60); break;
-                            case '量能異動': passThisFilter = (s.volume > s.avgVolume5d * 1.5); break;
-                            case '超跌反彈': passThisFilter = (s.rsi < 30); break;
+                            case '適合買進': passThisFilter = (totalScore >= threshold); break;
+                            case '考慮賣出': passThisFilter = (s.price < s.ma20 || totalScore < 60); break;
+                            case '量能異動': passThisFilter = (s.volume >= s.avgVolume5d * volMulti); break;
+                            case '超跌反彈': passThisFilter = (s.rsi <= 40); break;
                             case '外資買超': passThisFilter = s.foreignBuy3d; break;
                             case '投信買超': passThisFilter = s.trustBuy; break;
                             case '站上 MA20': passThisFilter = (s.price > s.ma20); break;
                             case '跌破 MA20': passThisFilter = (s.price < s.ma20); break;
-                            case 'MACD 翻多': passThisFilter = (s.macd > 0); break;
-                            case 'MACD 翻空': passThisFilter = (s.macd < 0); break;
+                            case 'MACD 翻多': passThisFilter = (s.macdHist > 0); break;
+                            case 'MACD 翻空': passThisFilter = (s.macdHist < 0); break;
                         }
                         if (!passThisFilter) {
                             matchCondition = false;
@@ -611,7 +646,7 @@
             document.getElementById('sum-date').innerText = dateStr;
             document.getElementById('sum-time').innerText = timeStr;
             
-            let conditionText = currentFilters.length > 0 ? currentFilters.join(' + ') : '無';
+            let conditionText = currentFilters.length > 0 ? currentFilters.join(' ＋ ') : '無';
             if(currentIndustryMap.category !== '全部') {
                 conditionText += ` ＋ ${currentIndustryMap.category}`;
                 if(currentIndustryMap.subCategory !== '全部') conditionText += `(${currentIndustryMap.subCategory})`;
@@ -633,9 +668,8 @@
             if(processedData.length > 0) {
                 const sortedByChg = [...processedData].sort((a,b) => b.changePercent - a.changePercent);
                 
-                // 改為自適應標籤(Pills)來展示代號，確保手機完美自動換行
-                const strongNames = sortedByChg.slice(0, 5).map(s => 
-                    `<span class="bg-gray-200/80 border border-gray-300 px-2 py-1 rounded text-[11px] md:text-xs whitespace-nowrap">${s.name}(${s.id})</span>`
+                const strongNames = sortedByChg.slice(0, 10).map(s => 
+                    `<span class="bg-white border border-gray-200 px-3 py-1 rounded-full text-[12px] md:text-sm font-bold text-gray-700 shadow-sm whitespace-nowrap">${s.name}(${s.id})</span>`
                 ).join('');
                 document.getElementById('sum-strong').innerHTML = strongNames;
 
@@ -663,11 +697,10 @@
 
             tbody.innerHTML = '';
             
-            // 查無資料時提供互斥操作的友善提示
             if (processed.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="4" class="p-6 md:p-8 text-center text-gray-500">
                     <div class="font-bold mb-2">查無符合條件的股票</div>
-                    <div class="text-xs text-gray-400 leading-relaxed">提示：目前條件可能互斥（如同時選了買進與賣出）<br>或過於嚴格，請嘗試減少篩選條件。</div>
+                    <div class="text-xs text-gray-400 leading-relaxed">提示：可能條件互斥（如同時選擇買進與賣出）<br>或沒有資料符合，請嘗試減少選項。</div>
                 </td></tr>`;
                 return;
             }
@@ -699,7 +732,7 @@
                         <div class="flex justify-center gap-1">
                             <div class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${stock.passStructure ? 'bg-red-500' : 'bg-gray-300'}"></div>
                             <div class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${stock.passMomentum ? 'bg-red-500' : 'bg-gray-300'}"></div>
-                            <div class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${stock.scoreChips >= 40 ? 'bg-red-500' : (stock.scoreChips >= 20 ? 'bg-g-yellow' : 'bg-gray-300')}"></div>
+                            <div class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${stock.scoreChips >= 20 ? 'bg-red-500' : 'bg-gray-300'}"></div>
                         </div>
                     </td>
                     <td class="px-2 py-2 md:px-4 md:py-3 whitespace-nowrap">
@@ -784,12 +817,29 @@
                 statusEl.innerText = '暫不符合';
             }
 
-            const entryType = stock.passStructure && stock.price >= stock.high20d ? '突破買進' : '回踩 MA20';
+            const entryType = stock.passStructure && stock.price >= stock.high20d * 0.95 ? '突破買進' : '回踩 MA20';
             document.getElementById('tip-entry').innerText = entryType;
             document.getElementById('tip-stoploss').innerText = (stock.price * 0.97).toFixed(1);
             document.getElementById('tip-takeprofit').innerText = `${(stock.price * 1.06).toFixed(1)} ~ ${(stock.price * 1.10).toFixed(1)}`;
 
             loadChartData(stock);
+        }
+
+        function generateMockChartData(currentPrice) {
+            const candles = [], volumes = [];
+            let p = currentPrice * 0.8; 
+            const d = new Date(); d.setDate(d.getDate() - 100);
+            for (let i = 0; i < 100; i++) {
+                d.setDate(d.getDate() + 1);
+                if (d.getDay() === 0 || d.getDay() === 6) continue;
+                const t = d.toISOString().split('T')[0];
+                const open = p, close = open * getRandom(0.96, 1.04);
+                const high = Math.max(open, close) * getRandom(1, 1.03), low = Math.min(open, close) * getRandom(0.97, 1);
+                candles.push({ time: t, open, high, low, close });
+                volumes.push({ time: t, value: Math.floor(getRandom(1000, 50000)), color: close >= open ? '#EF444488' : '#22C55E88' });
+                p = close;
+            }
+            return { candles, volumes };
         }
 
         async function loadChartData(stock) {
@@ -818,13 +868,17 @@
                 });
 
                 new ResizeObserver(() => {
-                    chart.applyOptions({ width: container.clientWidth, height: container.clientHeight });
+                    window.requestAnimationFrame(() => {
+                        if (container && container.clientWidth > 0 && container.clientHeight > 0) {
+                            chart.applyOptions({ width: container.clientWidth, height: container.clientHeight });
+                        }
+                    });
                 }).observe(container);
             }
 
             let chartData = null;
             try {
-                const token = localStorage.getItem('finmindToken');
+                const token = localStorage.getItem('finmindToken') || '';
                 const tokenParam = token ? `&token=${token}` : '';
                 const d = new Date(); d.setMonth(d.getMonth() - 6);
                 const startDate = d.toISOString().split('T')[0];
@@ -833,7 +887,7 @@
                 const res = await fetch(url);
                 if (res.ok) {
                     const json = await res.json();
-                    if (json.msg === 'success' && json.data.length > 0) {
+                    if (json.msg === 'success' && json.data && json.data.length > 0) {
                         const candles = [];
                         const volumes = [];
                         json.data.forEach(row => {
@@ -852,24 +906,8 @@
             candlestickSeries.setData(chartData.candles);
             volumeSeries.setData(chartData.volumes);
             chart.timeScale().fitContent();
+            
             loading.classList.add('hidden');
-        }
-
-        function generateMockChartData(currentPrice) {
-            const candles = [], volumes = [];
-            let p = currentPrice * 0.8; 
-            const d = new Date(); d.setDate(d.getDate() - 100);
-            for (let i = 0; i < 100; i++) {
-                d.setDate(d.getDate() + 1);
-                if (d.getDay() === 0 || d.getDay() === 6) continue;
-                const t = d.toISOString().split('T')[0];
-                const open = p, close = open * getRandom(0.96, 1.04);
-                const high = Math.max(open, close) * getRandom(1, 1.03), low = Math.min(open, close) * getRandom(0.97, 1);
-                candles.push({ time: t, open, high, low, close });
-                volumes.push({ time: t, value: Math.floor(getRandom(1000, 50000)), color: close >= open ? '#EF444488' : '#22C55E88' });
-                p = close;
-            }
-            return { candles, volumes };
         }
 
         function toggleDataModal() {
@@ -894,6 +932,7 @@
         async function refreshData() {
             document.getElementById('loading-state').classList.remove('hidden');
             const raw = await fetchStockData();
+            
             stocksData = evaluateStocks(raw);
             document.getElementById('loading-state').classList.add('hidden');
             renderTable();
@@ -904,7 +943,14 @@
             }
         }
 
-        document.getElementById('btn-refresh').addEventListener('click', refreshData);
+        document.getElementById('btn-refresh').addEventListener('click', () => {
+            document.getElementById('loading-state').innerHTML = `
+                <svg class="animate-spin h-8 w-8 text-g-blue" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                <span id="loading-text" class="text-sm">連線 FinMind API 抓取中... (無金鑰可能觸發備用模擬資料)</span>
+            `;
+            refreshData();
+        });
+        
         ['param-min-change', 'param-max-change', 'param-vol-multi', 'param-score'].forEach(id => {
             document.getElementById(id).addEventListener('change', () => {
                 stocksData = evaluateStocks(stocksData);
