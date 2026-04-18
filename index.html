@@ -64,7 +64,6 @@
 </head>
 <body class="bg-white text-gray-800 font-sans min-h-screen flex flex-col">
 
-    <!-- 頂部導航 -->
     <header class="flex flex-wrap items-center justify-between px-2 md:px-6 py-2 md:py-4 border-b border-gray-200 shadow-sm bg-white gap-y-2">
         <div class="flex items-center gap-2 md:gap-3">
             <div class="w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center bg-g-blue text-white font-bold text-sm md:text-lg">S</div>
@@ -86,10 +85,8 @@
 
     <main class="flex-1 p-2 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6 h-auto lg:h-[calc(100vh-80px)]">
         
-        <!-- 左側：控制面板、摘要與資料表 -->
         <div class="lg:col-span-5 flex flex-col gap-3 md:gap-4 h-[55vh] min-h-[400px] lg:h-full lg:min-h-0 overflow-hidden">
             
-            <!-- 參數設定與產業地圖按鈕 -->
             <div class="bg-white border border-gray-200 rounded-lg p-3 md:p-4 shadow-sm flex-shrink-0">
                 <div class="flex flex-wrap items-center justify-between mb-3 gap-2">
                     <h2 class="text-sm font-bold text-gray-600 tracking-wider">策略參數自訂</h2>
@@ -119,7 +116,7 @@
                 </div>
             </div>
 
-            <!-- 台股篩選摘要面板 -->
+            <!-- 台股篩選摘要面板 (修正手機版排版截斷問題) -->
             <div id="summary-panel" class="bg-gray-50 border border-gray-200 rounded-lg p-3 md:p-4 shadow-sm flex-shrink-0 text-sm hidden">
                 <div class="flex flex-wrap items-center gap-2 text-gray-500 text-[11px] md:text-xs mb-2 md:mb-3 border-b pb-2">
                     <span>資料日期：<span id="sum-date" class="font-medium"></span></span>
@@ -129,14 +126,22 @@
                 <div class="font-bold text-gray-800 mb-2">篩選條件：<span id="sum-condition" class="text-g-blue">無</span></div>
                 <div class="mb-3 text-gray-700">自板塊 <span id="sum-total" class="font-bold"></span> 支中，篩選出 <span id="sum-matched" class="font-bold text-g-blue text-base"></span> 支完全符合</div>
                 
-                <div class="space-y-1 text-xs md:text-sm">
-                    <div class="text-gray-600 flex items-start"><span class="w-16 flex-shrink-0">強勢代號：</span><span id="sum-strong" class="font-medium text-gray-800 flex-1 break-words"></span></div>
-                    <div class="text-gray-600 flex items-start"><span class="w-16 flex-shrink-0">表現最佳：</span><span id="sum-best" class="font-bold text-red-500 flex-1 break-words"></span></div>
-                    <div class="text-gray-600 flex items-start"><span class="w-16 flex-shrink-0">表現最弱：</span><span id="sum-worst" class="font-bold text-green-500 flex-1 break-words"></span></div>
+                <div class="space-y-2 text-xs md:text-sm">
+                    <div class="text-gray-600 flex items-start w-full">
+                        <span class="whitespace-nowrap mt-0.5">強勢代號：</span>
+                        <span id="sum-strong" class="font-medium text-gray-800 flex-1 whitespace-normal break-words leading-relaxed ml-1"></span>
+                    </div>
+                    <div class="text-gray-600 flex items-start w-full">
+                        <span class="whitespace-nowrap mt-0.5">表現最佳：</span>
+                        <span id="sum-best" class="font-bold text-red-500 flex-1 whitespace-normal break-words leading-relaxed ml-1"></span>
+                    </div>
+                    <div class="text-gray-600 flex items-start w-full">
+                        <span class="whitespace-nowrap mt-0.5">表現最弱：</span>
+                        <span id="sum-worst" class="font-bold text-green-500 flex-1 whitespace-normal break-words leading-relaxed ml-1"></span>
+                    </div>
                 </div>
             </div>
 
-            <!-- 數據表格 -->
             <div class="bg-white border border-gray-200 rounded-lg shadow-sm flex-1 overflow-hidden flex flex-col">
                 <div class="overflow-y-auto overflow-x-auto no-scrollbar flex-1 relative">
                     <table class="w-full whitespace-nowrap text-left border-collapse">
@@ -149,7 +154,6 @@
                             </tr>
                         </thead>
                         <tbody id="stock-table-body" class="divide-y divide-gray-100 text-sm">
-                            <!-- JS 動態生成 -->
                         </tbody>
                     </table>
                     <div id="loading-state" class="hidden absolute inset-0 bg-white/80 flex items-center justify-center text-g-blue font-medium z-20">
@@ -159,7 +163,6 @@
             </div>
         </div>
 
-        <!-- 右側：K線圖表與詳細資訊 -->
         <div class="lg:col-span-7 flex flex-col gap-3 md:gap-4 h-[60vh] min-h-[450px] lg:h-full lg:min-h-0">
             <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-3 md:p-4 flex-shrink-0 flex flex-wrap justify-between items-center gap-2">
                 <div>
@@ -177,7 +180,6 @@
                 <div id="tv_chart_container" class="w-full h-full min-h-[400px]"></div>
             </div>
 
-            <!-- 進出場提示面板 -->
             <div id="trade-tips-panel" class="bg-white border border-gray-200 rounded-lg shadow-sm p-3 md:p-4 flex-shrink-0 hidden">
                 <h3 class="text-sm font-bold text-gray-700 mb-2 md:mb-3 border-b pb-2">策略執行提示</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 md:gap-4 text-xs md:text-sm">
@@ -198,7 +200,6 @@
         </div>
     </main>
 
-    <!-- 產業地圖 Modal -->
     <div id="industry-modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4">
         <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl flex flex-col max-h-[90vh]">
             <div class="flex justify-between items-center p-4 md:p-6 border-b flex-shrink-0">
@@ -214,32 +215,31 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-blue-50/50 border border-blue-100 rounded-lg p-4">
-                    <h3 class="font-bold text-lg text-blue-900 mb-3 flex items-center gap-2">
-                        <span class="w-2 h-6 bg-blue-500 rounded"></span> 半導體產業鏈
-                    </h3>
-                    <div class="grid grid-cols-2 gap-2">
-                        <button onclick="selectIndustry('半導體', '全部')" class="industry-btn col-span-2 bg-white border border-blue-200 text-blue-700 hover:bg-blue-50 py-2 rounded text-sm font-bold shadow-sm">整體半導體板塊</button>
-                        <button onclick="selectIndustry('半導體', '廠務與自動化')" class="industry-btn bg-white border border-gray-200 hover:border-blue-300 py-2 rounded text-xs md:text-sm text-gray-700 shadow-sm">廠務與自動化</button>
-                        <button onclick="selectIndustry('半導體', '前段製造與耗材')" class="industry-btn bg-white border border-gray-200 hover:border-blue-300 py-2 rounded text-xs md:text-sm text-gray-700 shadow-sm">前段製造與耗材</button>
-                        <button onclick="selectIndustry('半導體', '後段封測與設備')" class="industry-btn bg-white border border-gray-200 hover:border-blue-300 py-2 rounded text-xs md:text-sm text-gray-700 shadow-sm">後段封測與設備</button>
-                        <button onclick="selectIndustry('半導體', 'IC設計')" class="industry-btn bg-white border border-gray-200 hover:border-blue-300 py-2 rounded text-xs md:text-sm text-gray-700 shadow-sm">IC設計</button>
+                    <div class="bg-blue-50/50 border border-blue-100 rounded-lg p-4">
+                        <h3 class="font-bold text-lg text-blue-900 mb-3 flex items-center gap-2">
+                            <span class="w-2 h-6 bg-blue-500 rounded"></span> 半導體產業鏈
+                        </h3>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="selectIndustry('半導體', '全部')" class="industry-btn col-span-2 bg-white border border-blue-200 text-blue-700 hover:bg-blue-50 py-2 rounded text-sm font-bold shadow-sm">整體半導體板塊</button>
+                            <button onclick="selectIndustry('半導體', '廠務與自動化')" class="industry-btn bg-white border border-gray-200 hover:border-blue-300 py-2 rounded text-xs md:text-sm text-gray-700 shadow-sm">廠務與自動化</button>
+                            <button onclick="selectIndustry('半導體', '前段製造與耗材')" class="industry-btn bg-white border border-gray-200 hover:border-blue-300 py-2 rounded text-xs md:text-sm text-gray-700 shadow-sm">前段製造與耗材</button>
+                            <button onclick="selectIndustry('半導體', '後段封測與設備')" class="industry-btn bg-white border border-gray-200 hover:border-blue-300 py-2 rounded text-xs md:text-sm text-gray-700 shadow-sm">後段封測與設備</button>
+                            <button onclick="selectIndustry('半導體', 'IC設計')" class="industry-btn bg-white border border-gray-200 hover:border-blue-300 py-2 rounded text-xs md:text-sm text-gray-700 shadow-sm">IC設計</button>
+                        </div>
                     </div>
-                </div>
 
-                <!-- PCB板塊 -->
-                <div class="bg-green-50/50 border border-green-100 rounded-lg p-4">
-                    <h3 class="font-bold text-lg text-green-900 mb-3 flex items-center gap-2">
-                        <span class="w-2 h-6 bg-green-500 rounded"></span> PCB 產業鏈
-                    </h3>
-                    <div class="grid grid-cols-2 gap-2">
-                        <button onclick="selectIndustry('PCB', '全部')" class="industry-btn col-span-2 bg-white border border-green-200 text-green-700 hover:bg-green-50 py-2 rounded text-sm font-bold shadow-sm">整體 PCB 板塊</button>
-                        <button onclick="selectIndustry('PCB', '上游材料')" class="industry-btn bg-white border border-gray-200 hover:border-green-300 py-2 rounded text-xs md:text-sm text-gray-700 shadow-sm">上游材料(銅箔/CCL)</button>
-                        <button onclick="selectIndustry('PCB', '中游製造')" class="industry-btn bg-white border border-gray-200 hover:border-green-300 py-2 rounded text-xs md:text-sm text-gray-700 shadow-sm">中游製造(硬/軟/載板)</button>
-                        <button onclick="selectIndustry('PCB', '下游組裝與應用')" class="industry-btn bg-white border border-gray-200 hover:border-green-300 py-2 rounded text-xs md:text-sm text-gray-700 shadow-sm">下游組裝與PCBA</button>
+                    <div class="bg-green-50/50 border border-green-100 rounded-lg p-4">
+                        <h3 class="font-bold text-lg text-green-900 mb-3 flex items-center gap-2">
+                            <span class="w-2 h-6 bg-green-500 rounded"></span> PCB 產業鏈
+                        </h3>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="selectIndustry('PCB', '全部')" class="industry-btn col-span-2 bg-white border border-green-200 text-green-700 hover:bg-green-50 py-2 rounded text-sm font-bold shadow-sm">整體 PCB 板塊</button>
+                            <button onclick="selectIndustry('PCB', '上游材料')" class="industry-btn bg-white border border-gray-200 hover:border-green-300 py-2 rounded text-xs md:text-sm text-gray-700 shadow-sm">上游材料(銅箔/CCL)</button>
+                            <button onclick="selectIndustry('PCB', '中游製造')" class="industry-btn bg-white border border-gray-200 hover:border-green-300 py-2 rounded text-xs md:text-sm text-gray-700 shadow-sm">中游製造(硬/軟/載板)</button>
+                            <button onclick="selectIndustry('PCB', '下游組裝與應用')" class="industry-btn bg-white border border-gray-200 hover:border-green-300 py-2 rounded text-xs md:text-sm text-gray-700 shadow-sm">下游組裝與PCBA</button>
+                        </div>
                     </div>
                 </div>
-            </div>
             </div>
             
             <div class="p-4 md:p-6 border-t flex-shrink-0 text-right bg-gray-50 rounded-b-lg">
@@ -248,7 +248,6 @@
         </div>
     </div>
 
-    <!-- 進階篩選器 Modal -->
     <div id="filter-modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4">
         <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl flex flex-col max-h-[90vh]">
             <div class="flex justify-between items-center p-4 md:p-6 border-b flex-shrink-0">
@@ -265,82 +264,84 @@
                 <div class="mb-8">
                     <h3 class="text-sm font-bold text-gray-700 mb-3">簡易篩選條件</h3>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                            <span class="font-bold text-gray-800">適合買進</span>
-                            <span class="bg-red-50 text-red-500 text-[10px] px-1.5 py-0.5 rounded font-bold">買入</span>
+                        <div onclick="applyFilter('適合買進', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
+                            <div class="flex justify-between items-start mb-1">
+                                <span class="font-bold text-gray-800">適合買進</span>
+                                <span class="bg-red-50 text-red-500 text-[10px] px-1.5 py-0.5 rounded font-bold">買入</span>
+                            </div>
+                            <div class="text-xs text-gray-500">站上均線 + 綜合評分 ≥ 門檻</div>
                         </div>
-                        <div class="text-xs text-gray-500">站上均線 + 綜合評分 ≥ 門檻</div>
-                    </div>
-                    <div onclick="applyFilter('考慮賣出', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
-                        <div class="flex justify-between items-start mb-1">
-                            <span class="font-bold text-gray-800">考慮賣出</span>
-                            <span class="bg-green-50 text-green-600 text-[10px] px-1.5 py-0.5 rounded font-bold">賣出</span>
+                        <div onclick="applyFilter('考慮賣出', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
+                            <div class="flex justify-between items-start mb-1">
+                                <span class="font-bold text-gray-800">考慮賣出</span>
+                                <span class="bg-green-50 text-green-600 text-[10px] px-1.5 py-0.5 rounded font-bold">賣出</span>
+                            </div>
+                            <div class="text-xs text-gray-500">跌破均線 + 評分偏弱</div>
                         </div>
-                        <div class="text-xs text-gray-500">跌破均線 + 評分偏弱</div>
-                    </div>
-                    <div onclick="applyFilter('量能異動', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
-                        <div class="flex justify-between items-start mb-1">
-                            <span class="font-bold text-gray-800">量能異動</span>
-                            <span class="bg-blue-50 text-blue-500 text-[10px] px-1.5 py-0.5 rounded font-bold">篩選</span>
+                        <div onclick="applyFilter('量能異動', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
+                            <div class="flex justify-between items-start mb-1">
+                                <span class="font-bold text-gray-800">量能異動</span>
+                                <span class="bg-blue-50 text-blue-500 text-[10px] px-1.5 py-0.5 rounded font-bold">篩選</span>
+                            </div>
+                            <div class="text-xs text-gray-500">今日成交量 > 5日均量 1.5 倍</div>
                         </div>
-                        <div class="text-xs text-gray-500">今日成交量 > 5日均量 1.5 倍</div>
-                    </div>
-                    <div onclick="applyFilter('超跌反彈', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
-                        <div class="flex justify-between items-start mb-1">
-                            <span class="font-bold text-gray-800">超跌反彈</span>
-                            <span class="bg-red-50 text-red-500 text-[10px] px-1.5 py-0.5 rounded font-bold">買入</span>
+                        <div onclick="applyFilter('超跌反彈', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
+                            <div class="flex justify-between items-start mb-1">
+                                <span class="font-bold text-gray-800">超跌反彈</span>
+                                <span class="bg-red-50 text-red-500 text-[10px] px-1.5 py-0.5 rounded font-bold">買入</span>
+                            </div>
+                            <div class="text-xs text-gray-500">RSI < 30 (超賣區)</div>
                         </div>
-                        <div class="text-xs text-gray-500">RSI < 30 (超賣區)</div>
-                    </div>
-                    <div onclick="applyFilter('外資買超', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
-                        <div class="flex justify-between items-start mb-1">
-                            <span class="font-bold text-gray-800">外資買超</span>
-                            <span class="bg-red-50 text-red-500 text-[10px] px-1.5 py-0.5 rounded font-bold">買入</span>
+                        <div onclick="applyFilter('外資買超', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
+                            <div class="flex justify-between items-start mb-1">
+                                <span class="font-bold text-gray-800">外資買超</span>
+                                <span class="bg-red-50 text-red-500 text-[10px] px-1.5 py-0.5 rounded font-bold">買入</span>
+                            </div>
+                            <div class="text-xs text-gray-500">最新真實籌碼</div>
                         </div>
-                        <div class="text-xs text-gray-500">最新真實籌碼</div>
-                    </div>
-                    <div onclick="applyFilter('投信買超', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
-                        <div class="flex justify-between items-start mb-1">
-                            <span class="font-bold text-gray-800">投信買超</span>
-                            <span class="bg-red-50 text-red-500 text-[10px] px-1.5 py-0.5 rounded font-bold">買入</span>
+                        <div onclick="applyFilter('投信買超', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
+                            <div class="flex justify-between items-start mb-1">
+                                <span class="font-bold text-gray-800">投信買超</span>
+                                <span class="bg-red-50 text-red-500 text-[10px] px-1.5 py-0.5 rounded font-bold">買入</span>
+                            </div>
+                            <div class="text-xs text-gray-500">最新真實籌碼</div>
                         </div>
-                        <div class="text-xs text-gray-500">最新真實籌碼</div>
                     </div>
                 </div>
-            </div>
 
-            <div>
-                <h3 class="text-sm font-bold text-gray-700 mb-3 border-b pb-2">進階篩選 <span class="text-xs text-gray-400 font-normal">趨勢與動能條件</span></h3>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <div onclick="applyFilter('站上 MA20', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
-                        <div class="flex justify-between items-start mb-1">
-                            <span class="font-bold text-gray-800">站上 MA20</span>
-                            <span class="bg-red-50 text-red-500 text-[10px] px-1.5 py-0.5 rounded font-bold">買入</span>
+                <div>
+                    <h3 class="text-sm font-bold text-gray-700 mb-3 border-b pb-2">進階篩選 <span class="text-xs text-gray-400 font-normal">趨勢與動能條件</span></h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <div onclick="applyFilter('站上 MA20', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
+                            <div class="flex justify-between items-start mb-1">
+                                <span class="font-bold text-gray-800">站上 MA20</span>
+                                <span class="bg-red-50 text-red-500 text-[10px] px-1.5 py-0.5 rounded font-bold">買入</span>
+                            </div>
+                            <div class="text-xs text-gray-500">收盤價在 20 日均線上方</div>
                         </div>
-                        <div class="text-xs text-gray-500">收盤價在 20 日均線上方</div>
-                    </div>
-                    <div onclick="applyFilter('跌破 MA20', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
-                        <div class="flex justify-between items-start mb-1">
-                            <span class="font-bold text-gray-800">跌破 MA20</span>
-                            <span class="bg-green-50 text-green-600 text-[10px] px-1.5 py-0.5 rounded font-bold">賣出</span>
+                        <div onclick="applyFilter('跌破 MA20', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
+                            <div class="flex justify-between items-start mb-1">
+                                <span class="font-bold text-gray-800">跌破 MA20</span>
+                                <span class="bg-green-50 text-green-600 text-[10px] px-1.5 py-0.5 rounded font-bold">賣出</span>
+                            </div>
+                            <div class="text-xs text-gray-500">收盤價在 20 日均線下方</div>
                         </div>
-                        <div class="text-xs text-gray-500">收盤價在 20 日均線下方</div>
-                    </div>
-                    <div onclick="applyFilter('MACD 翻多', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
-                        <div class="flex justify-between items-start mb-1">
-                            <span class="font-bold text-gray-800">MACD 翻多</span>
-                            <span class="bg-red-50 text-red-500 text-[10px] px-1.5 py-0.5 rounded font-bold">買入</span>
+                        <div onclick="applyFilter('MACD 翻多', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
+                            <div class="flex justify-between items-start mb-1">
+                                <span class="font-bold text-gray-800">MACD 翻多</span>
+                                <span class="bg-red-50 text-red-500 text-[10px] px-1.5 py-0.5 rounded font-bold">買入</span>
+                            </div>
+                            <div class="text-xs text-gray-500">柱狀由負轉正</div>
                         </div>
-                        <div class="text-xs text-gray-500">柱狀由負轉正</div>
-                    </div>
-                    <div onclick="applyFilter('MACD 翻空', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
-                        <div class="flex justify-between items-start mb-1">
-                            <span class="font-bold text-gray-800">MACD 翻空</span>
-                            <span class="bg-green-50 text-green-600 text-[10px] px-1.5 py-0.5 rounded font-bold">賣出</span>
+                        <div onclick="applyFilter('MACD 翻空', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
+                            <div class="flex justify-between items-start mb-1">
+                                <span class="font-bold text-gray-800">MACD 翻空</span>
+                                <span class="bg-green-50 text-green-600 text-[10px] px-1.5 py-0.5 rounded font-bold">賣出</span>
+                            </div>
+                            <div class="text-xs text-gray-500">柱狀由正轉負</div>
                         </div>
-                        <div class="text-xs text-gray-500">柱狀由正轉負</div>
                     </div>
                 </div>
-            </div>
             </div>
 
             <div class="p-4 md:p-6 border-t flex-shrink-0 text-right bg-gray-50 rounded-b-lg">
@@ -349,7 +350,6 @@
         </div>
     </div>
 
-    <!-- API 設定 Modal -->
     <div id="data-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
         <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-5 md:p-6 flex flex-col">
             <h2 class="text-lg md:text-xl font-bold text-gray-800 mb-4">FinMind 資料源設定</h2>
@@ -367,49 +367,40 @@
     </div>
 
     <script>
-        // === 深度板塊展開與股票池重建 ===
         const stockPool = [
-            // 半導體 - 廠務與自動化
             { id: "2404", name: "漢唐", category: "半導體", subCategory: "廠務與自動化" },
             { id: "6139", name: "亞翔", category: "半導體", subCategory: "廠務與自動化" },
             { id: "6196", name: "帆宣", category: "半導體", subCategory: "廠務與自動化" },
             { id: "3413", name: "京鼎", category: "半導體", subCategory: "廠務與自動化" },
             { id: "2464", name: "盟立", category: "半導體", subCategory: "廠務與自動化" },
             { id: "6187", name: "萬潤", category: "半導體", subCategory: "廠務與自動化" },
-            // 半導體 - 前段製造與耗材
             { id: "2330", name: "台積電", category: "半導體", subCategory: "前段製造與耗材" },
             { id: "2303", name: "聯電", category: "半導體", subCategory: "前段製造與耗材" },
             { id: "3680", name: "家登", category: "半導體", subCategory: "前段製造與耗材" },
             { id: "2338", name: "光罩", category: "半導體", subCategory: "前段製造與耗材" },
             { id: "5434", name: "崇越", category: "半導體", subCategory: "前段製造與耗材" },
             { id: "3010", name: "華立", category: "半導體", subCategory: "前段製造與耗材" },
-            // 半導體 - 後段封測與設備
             { id: "3711", name: "日月光", category: "半導體", subCategory: "後段封測與設備" },
             { id: "3583", name: "辛耘", category: "半導體", subCategory: "後段封測與設備" },
             { id: "3131", name: "弘塑", category: "半導體", subCategory: "後段封測與設備" },
             { id: "2360", name: "致茂", category: "半導體", subCategory: "後段封測與設備" },
             { id: "2351", name: "順德", category: "半導體", subCategory: "後段封測與設備" },
             { id: "6548", name: "長科*", category: "半導體", subCategory: "後段封測與設備" },
-            // 半導體 - IC設計
             { id: "2454", name: "聯發科", category: "半導體", subCategory: "IC設計" },
             { id: "3661", name: "世芯-KY", category: "半導體", subCategory: "IC設計" },
             { id: "3443", name: "創意", category: "半導體", subCategory: "IC設計" },
             { id: "3035", name: "智原", category: "半導體", subCategory: "IC設計" },
-            
-            // PCB - 上游材料
             { id: "2383", name: "台光電", category: "PCB", subCategory: "上游材料" },
             { id: "6213", name: "聯茂", category: "PCB", subCategory: "上游材料" },
             { id: "6274", name: "台燿", category: "PCB", subCategory: "上游材料" },
             { id: "8358", name: "金居", category: "PCB", subCategory: "上游材料" },
             { id: "1815", name: "富喬", category: "PCB", subCategory: "上游材料" },
-            // PCB - 中游製造
             { id: "3037", name: "欣興", category: "PCB", subCategory: "中游製造" },
             { id: "8046", name: "南電", category: "PCB", subCategory: "中游製造" },
             { id: "3189", name: "景碩", category: "PCB", subCategory: "中游製造" },
             { id: "2368", name: "華通", category: "PCB", subCategory: "中游製造" },
             { id: "3044", name: "健鼎", category: "PCB", subCategory: "中游製造" },
             { id: "4958", name: "臻鼎-KY", category: "PCB", subCategory: "中游製造" },
-            // PCB - 下游組裝與應用
             { id: "2317", name: "鴻海", category: "PCB", subCategory: "下游組裝與應用" },
             { id: "2382", name: "廣達", category: "PCB", subCategory: "下游組裝與應用" },
             { id: "3231", name: "緯創", category: "PCB", subCategory: "下游組裝與應用" },
@@ -423,11 +414,9 @@
         let candlestickSeries = null;
         let volumeSeries = null;
         
-        // 篩選狀態管理
         let currentFilterName = '無';
         let currentIndustryMap = { category: '全部', subCategory: '全部' };
 
-        // === 輔助函數與模擬資料 ===
         const getRandom = (min, max) => Math.random() * (max - min) + min;
         const getBool = (chance = 0.5) => Math.random() < chance;
 
@@ -462,7 +451,6 @@
             };
         }
 
-        // === FinMind API ===
         async function fetchStockData() {
             try {
                 const token = localStorage.getItem('finmindToken');
@@ -528,7 +516,6 @@
             }
         }
 
-        // === 評分與地圖過濾器 ===
         function evaluateStocks(data) {
             const minChg = parseFloat(document.getElementById('param-min-change').value);
             const maxChg = parseFloat(document.getElementById('param-max-change').value);
@@ -566,7 +553,6 @@
 
                 let matchCondition = true;
                 
-                // 1. 進階策略篩選
                 if (currentFilterName !== '無') {
                     switch (currentFilterName) {
                         case '適合買進': matchCondition = (s.price > s.ma20 && totalScore >= threshold); break;
@@ -582,7 +568,6 @@
                     }
                 }
 
-                // 2. 產業地圖篩選
                 if (currentIndustryMap.category !== '全部') {
                     if (s.category !== currentIndustryMap.category) {
                         matchCondition = false;
@@ -595,7 +580,6 @@
             });
         }
 
-        // === 視圖與面板更新 ===
         function updateSummaryPanel(processedData) {
             const panel = document.getElementById('summary-panel');
             panel.classList.remove('hidden');
@@ -614,7 +598,6 @@
             }
             document.getElementById('sum-condition').innerText = conditionText;
 
-            // 計算當前地圖母體數量
             let baseCount = stocksData.length;
             if (currentIndustryMap.category !== '全部') {
                 baseCount = stocksData.filter(s => {
@@ -704,7 +687,6 @@
             });
         }
 
-        // === 事件與控制器 ===
         function toggleFilterModal() {
             const modal = document.getElementById('filter-modal');
             modal.classList.toggle('hidden');
@@ -737,7 +719,6 @@
         function selectIndustry(category, subCategory) {
             currentIndustryMap = { category, subCategory };
             
-            // UI更新：改變按鈕文字與狀態
             let labelText = category === '全部' ? '全部產業' : (subCategory === '全部' ? category : subCategory);
             document.getElementById('current-industry-label').innerText = labelText;
             
@@ -898,7 +879,6 @@
             });
         });
 
-        // 啟動
         refreshData();
     </script>
 </body>
