@@ -129,7 +129,7 @@
                 <div class="space-y-3 text-xs md:text-sm">
                     <div class="text-gray-600 flex flex-col sm:flex-row sm:items-start w-full gap-1 sm:gap-0">
                         <span class="whitespace-nowrap sm:mt-0.5 text-gray-500 font-bold">強勢代號：</span>
-                        <span id="sum-strong" class="font-medium text-gray-800 flex-1 break-words leading-relaxed sm:ml-2"></span>
+                        <div id="sum-strong" class="font-medium text-gray-800 flex-1 sm:ml-2 flex flex-col gap-0.5"></div>
                     </div>
                     <div class="text-gray-600 flex flex-col sm:flex-row sm:items-start w-full gap-1 sm:gap-0">
                         <span class="whitespace-nowrap sm:mt-0.5 text-gray-500 font-bold">表現最佳：</span>
@@ -619,8 +619,8 @@
 
             if(processedData.length > 0) {
                 const sortedByChg = [...processedData].sort((a,b) => b.changePercent - a.changePercent);
-                const strongNames = sortedByChg.slice(0, 5).map(s => `${s.name}(${s.id})`).join('、');
-                document.getElementById('sum-strong').innerText = strongNames;
+                const strongNames = sortedByChg.slice(0, 5).map(s => `<div>${s.name}(${s.id})</div>`).join('');
+                document.getElementById('sum-strong').innerHTML = strongNames;
 
                 const best = sortedByChg[0];
                 const worst = sortedByChg[sortedByChg.length - 1];
@@ -628,7 +628,7 @@
                 document.getElementById('sum-best').innerText = `${best.name} +${best.changePercent.toFixed(2)}%`;
                 document.getElementById('sum-worst').innerText = `${worst.name} ${worst.changePercent > 0 ? '+' : ''}${worst.changePercent.toFixed(2)}%`;
             } else {
-                document.getElementById('sum-strong').innerText = '--';
+                document.getElementById('sum-strong').innerHTML = '<div>--</div>';
                 document.getElementById('sum-best').innerText = '--';
                 document.getElementById('sum-worst').innerText = '--';
             }
