@@ -7,7 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
     <script>
-        // 攔截並隱藏瀏覽器無害的 ResizeObserver 錯誤
         window.addEventListener('error', function(e) {
             if (e.message === 'ResizeObserver loop completed with undelivered notifications.' || 
                 e.message === 'ResizeObserver loop limit exceeded') {
@@ -23,7 +22,13 @@
                         'g-red': '#EA4335',
                         'g-yellow': '#FBBC05',
                         'g-green': '#34A853',
-                        'g-gray': '#F8F9FA'
+                        'g-gray': '#F8F9FA',
+                        'ma-5': '#2962FF',
+                        'ma-10': '#FF6D00',
+                        'ma-20': '#E91E63',
+                        'ma-60': '#00C853',
+                        'ma-120': '#9C27B0',
+                        'ma-240': '#795548'
                     }
                 }
             }
@@ -39,30 +44,58 @@
         .g-input:focus { border: 2px solid #4285F4; padding: 7px 11px; }
         .filter-card.active { border-color: #4285F4; background-color: #F8F9FA; box-shadow: 0 0 0 1px #4285F4; }
         .industry-btn.active { background-color: #4285F4; color: white; border-color: #4285F4; }
+        
+        /* Checkbox styling for chart settings */
+        .chart-toggle-checkbox {
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border: 2px solid #DADCE0;
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .chart-toggle-checkbox:checked {
+            background-color: #4285F4;
+            border-color: #4285F4;
+        }
+        .chart-toggle-checkbox:checked::after {
+            content: '';
+            position: absolute;
+            left: 3px;
+            top: 0px;
+            width: 4px;
+            height: 8px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
     </style>
 </head>
-<body class="bg-white text-gray-800 font-sans min-h-screen flex flex-col">
+<body class="bg-gray-50 text-gray-800 font-sans min-h-screen flex flex-col">
 
-    <header class="flex flex-wrap items-center justify-between px-2 md:px-6 py-2 md:py-4 border-b border-gray-200 shadow-sm bg-white gap-y-2">
+    <header class="flex flex-wrap items-center justify-between px-3 md:px-6 py-2 md:py-4 border-b border-gray-200 shadow-sm bg-white gap-y-2 sticky top-0 z-40">
         <div class="flex items-center gap-2 md:gap-3">
             <div class="w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center bg-g-blue text-white font-bold text-sm md:text-lg">S</div>
-            <h1 class="text-base md:text-2xl font-medium text-gray-700 tracking-wide truncate">台股四維狙擊 <span class="text-xs text-gray-400 font-normal">Powered by FinMind API</span></h1>
+            <h1 class="text-base md:text-2xl font-medium text-gray-700 tracking-wide truncate">台股四維狙擊 <span class="text-xs text-gray-400 font-normal hidden sm:inline">Powered by FinMind API</span></h1>
         </div>
         <div class="flex items-center gap-1.5 md:gap-3">
-            <button onclick="toggleFilterModal()" class="flex items-center gap-1 bg-blue-50 text-g-blue hover:bg-blue-100 px-2 md:px-4 py-1 md:py-2 rounded text-[11px] md:text-sm font-bold transition-colors border border-blue-200 shadow-sm whitespace-nowrap">
+            <button onclick="toggleFilterModal()" class="flex items-center gap-1 bg-blue-50 text-g-blue hover:bg-blue-100 px-2 md:px-4 py-1.5 md:py-2 rounded text-[11px] md:text-sm font-bold transition-colors border border-blue-200 shadow-sm whitespace-nowrap">
                 <svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
                 <span class="hidden sm:inline">進階</span>篩選
             </button>
-            <button onclick="toggleDataModal()" class="text-gray-600 hover:text-g-blue hover:bg-g-gray px-2 md:px-4 py-1 md:py-2 rounded text-[11px] md:text-sm font-medium transition-colors border border-gray-200">
+            <button onclick="toggleDataModal()" class="text-gray-600 hover:text-g-blue hover:bg-g-gray px-2 md:px-4 py-1.5 md:py-2 rounded text-[11px] md:text-sm font-medium transition-colors border border-gray-200">
                 資料源
             </button>
-            <button id="btn-refresh" class="bg-g-blue hover:bg-blue-600 text-white px-2 md:px-5 py-1 md:py-2 rounded text-[11px] md:text-sm font-medium shadow-sm transition-colors">
+            <button id="btn-refresh" class="bg-g-blue hover:bg-blue-600 text-white px-3 md:px-5 py-1.5 md:py-2 rounded text-[11px] md:text-sm font-medium shadow-sm transition-colors">
                 更新
             </button>
         </div>
     </header>
 
-    <main class="flex-1 p-2 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6 h-auto lg:h-[calc(100vh-80px)]">
+    <main class="flex-1 p-2 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-3 md:gap-6 h-auto lg:h-[calc(100vh-80px)]">
         
         <div class="lg:col-span-5 flex flex-col gap-3 md:gap-4 lg:h-full lg:overflow-hidden">
             
@@ -96,7 +129,7 @@
             </div>
 
             <!-- 台股篩選摘要面板 -->
-            <div id="summary-panel" class="bg-gray-50 border border-gray-200 rounded-lg p-3 md:p-4 shadow-sm flex-shrink-0 text-sm hidden">
+            <div id="summary-panel" class="bg-white border border-gray-200 rounded-lg p-3 md:p-4 shadow-sm flex-shrink-0 text-sm hidden">
                 <div class="flex flex-wrap items-center gap-2 text-gray-500 text-[11px] md:text-xs mb-2 md:mb-3 border-b pb-2">
                     <span>資料日期：<span id="sum-date" class="font-medium"></span></span>
                     <span class="hidden sm:inline">|</span>
@@ -137,46 +170,64 @@
                     </table>
                     <div id="loading-state" class="hidden absolute inset-0 bg-white/90 flex flex-col items-center justify-center text-g-blue font-medium z-20 gap-3">
                         <svg class="animate-spin h-8 w-8 text-g-blue" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                        <span id="loading-text" class="text-sm">連線 FinMind API 抓取中... (無金鑰可能觸發備用模擬資料)</span>
+                        <span id="loading-text" class="text-sm">連線 FinMind API 抓取中...</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="lg:col-span-7 flex flex-col gap-3 md:gap-4 h-[60vh] min-h-[450px] lg:h-full lg:min-h-0">
+        <!-- 右側：K線圖表區 -->
+        <div class="lg:col-span-7 flex flex-col gap-3 md:gap-4 h-[65vh] min-h-[500px] lg:h-full lg:min-h-0">
             <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-3 md:p-4 flex-shrink-0 flex flex-wrap justify-between items-center gap-2">
                 <div>
                     <h2 id="detail-title" class="text-xl font-bold text-gray-800">請選擇股票</h2>
-                    <div id="detail-subtitle" class="text-sm text-gray-500 mt-1">點擊左側列表以載入 K 線圖與進出場建議</div>
+                    <div id="detail-subtitle" class="text-sm text-gray-500 mt-1">點擊左側列表以載入 K 線圖與技術指標</div>
                 </div>
                 <div id="detail-action" class="text-right hidden">
-                    <div class="text-xs text-gray-500 mb-1">系統建議</div>
                     <div id="detail-status" class="px-3 py-1 rounded text-sm font-bold border"></div>
                 </div>
             </div>
             
-            <div class="bg-white border border-gray-200 rounded-lg shadow-sm flex-1 p-1 relative">
-                <div id="chart-loading" class="hidden absolute inset-0 bg-white/90 flex flex-col items-center justify-center text-g-blue font-medium z-10 gap-2">
-                    <svg class="animate-spin h-6 w-6 text-g-blue" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                    載入 K 線資料中...
+            <div class="bg-white border border-gray-200 rounded-lg shadow-sm flex-1 flex flex-col relative overflow-hidden">
+                <!-- 圖表指標設定列 -->
+                <div class="bg-gray-50 border-b border-gray-200 p-2 md:p-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] md:text-xs font-medium text-gray-600">
+                    <div class="flex items-center gap-3 border-r pr-3">
+                        <label class="flex items-center gap-1 cursor-pointer hover:text-gray-800"><input type="checkbox" class="chart-toggle-checkbox" data-target="ma5" checked><span class="text-[#2962FF]">5MA</span></label>
+                        <label class="flex items-center gap-1 cursor-pointer hover:text-gray-800"><input type="checkbox" class="chart-toggle-checkbox" data-target="ma10" checked><span class="text-[#FF6D00]">10MA</span></label>
+                        <label class="flex items-center gap-1 cursor-pointer hover:text-gray-800"><input type="checkbox" class="chart-toggle-checkbox" data-target="ma20" checked><span class="text-[#E91E63]">20MA</span></label>
+                        <label class="flex items-center gap-1 cursor-pointer hover:text-gray-800"><input type="checkbox" class="chart-toggle-checkbox" data-target="ma60" checked><span class="text-[#00C853]">60MA</span></label>
+                        <label class="flex items-center gap-1 cursor-pointer hover:text-gray-800 hidden sm:flex"><input type="checkbox" class="chart-toggle-checkbox" data-target="ma120"><span class="text-[#9C27B0]">120MA</span></label>
+                        <label class="flex items-center gap-1 cursor-pointer hover:text-gray-800 hidden sm:flex"><input type="checkbox" class="chart-toggle-checkbox" data-target="ma240"><span class="text-[#795548]">240MA</span></label>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <label class="flex items-center gap-1 cursor-pointer hover:text-gray-800"><input type="checkbox" class="chart-toggle-checkbox marker-toggle" data-target="marker-rev" checked><span class="bg-orange-100 text-orange-600 px-1 rounded">月營收</span></label>
+                        <label class="flex items-center gap-1 cursor-pointer hover:text-gray-800"><input type="checkbox" class="chart-toggle-checkbox marker-toggle" data-target="marker-div" checked><span class="bg-red-100 text-red-600 px-1 rounded">除權息</span></label>
+                        <label class="flex items-center gap-1 cursor-pointer hover:text-gray-800"><input type="checkbox" class="chart-toggle-checkbox marker-toggle" data-target="marker-meet" checked><span class="bg-blue-100 text-blue-600 px-1 rounded">法說會</span></label>
+                    </div>
                 </div>
-                <div id="tv_chart_container" class="w-full h-full min-h-[400px]"></div>
+
+                <div class="flex-1 relative">
+                    <div id="chart-loading" class="hidden absolute inset-0 bg-white/90 flex flex-col items-center justify-center text-g-blue font-medium z-10 gap-2">
+                        <svg class="animate-spin h-6 w-6 text-g-blue" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        載入 K 線資料中...
+                    </div>
+                    <div id="tv_chart_container" class="w-full h-full absolute inset-0"></div>
+                </div>
             </div>
 
             <div id="trade-tips-panel" class="bg-white border border-gray-200 rounded-lg shadow-sm p-3 md:p-4 flex-shrink-0 hidden">
-                <h3 class="text-sm font-bold text-gray-700 mb-2 md:mb-3 border-b pb-2">策略執行提示</h3>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 md:gap-4 text-xs md:text-sm">
-                    <div class="bg-blue-50 p-2 md:p-3 rounded flex sm:block justify-between items-center">
-                        <div class="text-g-blue font-bold sm:mb-1">建議進場點</div>
-                        <div id="tip-entry" class="text-gray-800 text-[13px] md:text-lg font-medium">--</div>
+                <div class="grid grid-cols-3 gap-2 md:gap-4 text-xs md:text-sm text-center">
+                    <div class="bg-blue-50 p-2 md:p-3 rounded">
+                        <div class="text-g-blue font-bold mb-1">建議進場點</div>
+                        <div id="tip-entry" class="text-gray-800 text-[13px] md:text-base font-medium truncate">--</div>
                     </div>
-                    <div class="bg-red-50 p-2 md:p-3 rounded flex sm:block justify-between items-center">
-                        <div class="text-g-red font-bold sm:mb-1">嚴格停損 (-3%)</div>
-                        <div id="tip-stoploss" class="text-gray-800 text-[13px] md:text-lg font-medium">--</div>
+                    <div class="bg-red-50 p-2 md:p-3 rounded">
+                        <div class="text-g-red font-bold mb-1">防守停損 (-3%)</div>
+                        <div id="tip-stoploss" class="text-gray-800 text-[13px] md:text-base font-medium">--</div>
                     </div>
-                    <div class="bg-green-50 p-2 md:p-3 rounded flex sm:block justify-between items-center">
-                        <div class="text-g-green font-bold sm:mb-1">波段停利 (+6%~10%)</div>
-                        <div id="tip-takeprofit" class="text-gray-800 text-[13px] md:text-lg font-medium">--</div>
+                    <div class="bg-green-50 p-2 md:p-3 rounded">
+                        <div class="text-g-green font-bold mb-1">波段停利 (+8%)</div>
+                        <div id="tip-takeprofit" class="text-gray-800 text-[13px] md:text-base font-medium">--</div>
                     </div>
                 </div>
             </div>
@@ -185,49 +236,112 @@
 
     <!-- 產業地圖 Modal -->
     <div id="industry-modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl flex flex-col max-h-[90vh]">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-5xl flex flex-col max-h-[90vh]">
             <div class="flex justify-between items-center p-4 md:p-6 border-b flex-shrink-0">
-                <h2 class="text-lg md:text-2xl font-bold text-gray-800">全板塊產業地圖分類</h2>
+                <h2 class="text-lg md:text-2xl font-bold text-gray-800">全板塊產業分類地圖</h2>
                 <button onclick="toggleIndustryModal()" class="text-gray-400 hover:text-gray-800 p-1">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
 
-            <div class="p-4 md:p-6 overflow-y-auto">
-                <div class="mb-4">
-                    <button onclick="selectIndustry('全部', '全部')" class="industry-btn active w-full py-2 rounded text-sm border hover:bg-gray-50 transition-colors font-bold">顯示台股全市場</button>
+            <div class="p-4 md:p-6 overflow-y-auto bg-gray-50">
+                <div class="mb-6">
+                    <button onclick="selectIndustry('全部', '全部')" class="industry-btn active w-full py-3 rounded-lg text-sm border hover:bg-gray-100 transition-colors font-bold shadow-sm">🌐 顯示台股全市場</button>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-blue-50/50 border border-blue-100 rounded-lg p-4">
-                        <h3 class="font-bold text-lg text-blue-900 mb-3 flex items-center gap-2">
-                            <span class="w-2 h-6 bg-blue-500 rounded"></span> 半導體產業鏈
-                        </h3>
-                        <div class="grid grid-cols-2 gap-2">
-                            <button onclick="selectIndustry('半導體', '全部')" class="industry-btn col-span-2 bg-white border border-blue-200 text-blue-700 hover:bg-blue-50 py-2 rounded text-sm font-bold shadow-sm">整體半導體板塊</button>
-                            <button onclick="selectIndustry('半導體', '廠務與自動化')" class="industry-btn bg-white border border-gray-200 hover:border-blue-300 py-2 rounded text-xs md:text-sm text-gray-700 shadow-sm">廠務與自動化</button>
-                            <button onclick="selectIndustry('半導體', '前段製造與耗材')" class="industry-btn bg-white border border-gray-200 hover:border-blue-300 py-2 rounded text-xs md:text-sm text-gray-700 shadow-sm">前段製造與耗材</button>
-                            <button onclick="selectIndustry('半導體', '後段封測與設備')" class="industry-btn bg-white border border-gray-200 hover:border-blue-300 py-2 rounded text-xs md:text-sm text-gray-700 shadow-sm">後段封測與設備</button>
-                            <button onclick="selectIndustry('半導體', 'IC設計')" class="industry-btn bg-white border border-gray-200 hover:border-blue-300 py-2 rounded text-xs md:text-sm text-gray-700 shadow-sm">IC設計</button>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    
+                    <!-- 科技熱門題材區 -->
+                    <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
+                        <h3 class="font-bold text-lg text-gray-800 mb-4 border-b pb-2 flex items-center gap-2">🔥 科技與熱門題材</h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="text-sm font-bold text-blue-800 mb-2 flex items-center gap-1.5"><span class="w-1.5 h-4 bg-blue-500 rounded"></span>半導體產業鏈</h4>
+                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                    <button onclick="selectIndustry('半導體', '全部')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-blue-300 py-1.5 rounded text-xs md:text-sm text-gray-700">全板塊</button>
+                                    <button onclick="selectIndustry('半導體', 'IC設計')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-blue-300 py-1.5 rounded text-xs md:text-sm text-gray-700">IC設計</button>
+                                    <button onclick="selectIndustry('半導體', '晶圓代工與製造')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-blue-300 py-1.5 rounded text-xs md:text-sm text-gray-700">代工與製造</button>
+                                    <button onclick="selectIndustry('半導體', '後段封測與設備')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-blue-300 py-1.5 rounded text-xs md:text-sm text-gray-700">封測與設備</button>
+                                    <button onclick="selectIndustry('半導體', '廠務與自動化')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-blue-300 py-1.5 rounded text-xs md:text-sm text-gray-700">廠務與自動化</button>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="text-sm font-bold text-purple-800 mb-2 flex items-center gap-1.5"><span class="w-1.5 h-4 bg-purple-500 rounded"></span>光通訊與 CPO</h4>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button onclick="selectIndustry('光通訊與CPO', '光通訊相關')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-purple-300 py-1.5 rounded text-xs md:text-sm text-gray-700">光通訊相關</button>
+                                    <button onclick="selectIndustry('光通訊與CPO', 'CPO相關')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-purple-300 py-1.5 rounded text-xs md:text-sm text-gray-700">CPO共同封裝</button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h4 class="text-sm font-bold text-orange-800 mb-2 flex items-center gap-1.5"><span class="w-1.5 h-4 bg-orange-500 rounded"></span>電腦與伺服器</h4>
+                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                    <button onclick="selectIndustry('電腦與伺服器', '伺服器代工')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-orange-300 py-1.5 rounded text-xs md:text-sm text-gray-700">伺服器代工</button>
+                                    <button onclick="selectIndustry('電腦與伺服器', '散熱模組')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-orange-300 py-1.5 rounded text-xs md:text-sm text-gray-700">散熱模組</button>
+                                    <button onclick="selectIndustry('電腦與伺服器', 'CPU相關')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-orange-300 py-1.5 rounded text-xs md:text-sm text-gray-700">CPU相關</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="bg-green-50/50 border border-green-100 rounded-lg p-4">
-                        <h3 class="font-bold text-lg text-green-900 mb-3 flex items-center gap-2">
-                            <span class="w-2 h-6 bg-green-500 rounded"></span> PCB 產業鏈
-                        </h3>
-                        <div class="grid grid-cols-2 gap-2">
-                            <button onclick="selectIndustry('PCB', '全部')" class="industry-btn col-span-2 bg-white border border-green-200 text-green-700 hover:bg-green-50 py-2 rounded text-sm font-bold shadow-sm">整體 PCB 板塊</button>
-                            <button onclick="selectIndustry('PCB', '上游材料')" class="industry-btn bg-white border border-gray-200 hover:border-green-300 py-2 rounded text-xs md:text-sm text-gray-700 shadow-sm">上游材料(銅箔/CCL)</button>
-                            <button onclick="selectIndustry('PCB', '中游製造')" class="industry-btn bg-white border border-gray-200 hover:border-green-300 py-2 rounded text-xs md:text-sm text-gray-700 shadow-sm">中游製造(硬/軟/載板)</button>
-                            <button onclick="selectIndustry('PCB', '下游組裝與應用')" class="industry-btn bg-white border border-gray-200 hover:border-green-300 py-2 rounded text-xs md:text-sm text-gray-700 shadow-sm">下游組裝與PCBA</button>
+                    <!-- 電子零組件與網通 -->
+                    <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
+                        <h3 class="font-bold text-lg text-gray-800 mb-4 border-b pb-2 flex items-center gap-2">🔌 零組件與網通產業</h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="text-sm font-bold text-green-800 mb-2 flex items-center gap-1.5"><span class="w-1.5 h-4 bg-green-500 rounded"></span>PCB 印刷電路板</h4>
+                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                    <button onclick="selectIndustry('PCB', '全部')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-green-300 py-1.5 rounded text-xs md:text-sm text-gray-700">全板塊</button>
+                                    <button onclick="selectIndustry('PCB', '上游材料')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-green-300 py-1.5 rounded text-xs md:text-sm text-gray-700">上游銅箔/CCL</button>
+                                    <button onclick="selectIndustry('PCB', '中游製造')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-green-300 py-1.5 rounded text-xs md:text-sm text-gray-700">中游硬/軟/載板</button>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="text-sm font-bold text-indigo-800 mb-2 flex items-center gap-1.5"><span class="w-1.5 h-4 bg-indigo-500 rounded"></span>通訊與太空衛星</h4>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button onclick="selectIndustry('通訊與衛星', '網通設備')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-indigo-300 py-1.5 rounded text-xs md:text-sm text-gray-700">網通設備</button>
+                                    <button onclick="selectIndustry('通訊與衛星', '低軌衛星相關')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-indigo-300 py-1.5 rounded text-xs md:text-sm text-gray-700">低軌衛星相關</button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h4 class="text-sm font-bold text-teal-800 mb-2 flex items-center gap-1.5"><span class="w-1.5 h-4 bg-teal-500 rounded"></span>光電與其他電子</h4>
+                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                    <button onclick="selectIndustry('光電業', '全部')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-teal-300 py-1.5 rounded text-xs md:text-sm text-gray-700">光電面板</button>
+                                    <button onclick="selectIndustry('電子零組件', '被動元件')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-teal-300 py-1.5 rounded text-xs md:text-sm text-gray-700">被動元件</button>
+                                    <button onclick="selectIndustry('其他電子', '全部')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-teal-300 py-1.5 rounded text-xs md:text-sm text-gray-700">其他電子</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
+
+                    <!-- 傳統產業與金融 -->
+                    <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm lg:col-span-2">
+                        <h3 class="font-bold text-lg text-gray-800 mb-4 border-b pb-2 flex items-center gap-2">🏭 傳統產業與金融</h3>
+                        
+                        <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3">
+                            <button onclick="selectIndustry('金融保險', '全部')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-gray-400 py-2 rounded text-xs md:text-sm text-gray-700 font-bold">金融保險</button>
+                            <button onclick="selectIndustry('航運業', '全部')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-gray-400 py-2 rounded text-xs md:text-sm text-gray-700">航運業</button>
+                            <button onclick="selectIndustry('生技醫療', '全部')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-gray-400 py-2 rounded text-xs md:text-sm text-gray-700">生技醫療</button>
+                            <button onclick="selectIndustry('機電與重電', '全部')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-gray-400 py-2 rounded text-xs md:text-sm text-gray-700">機電與重電</button>
+                            <button onclick="selectIndustry('鋼鐵工業', '全部')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-gray-400 py-2 rounded text-xs md:text-sm text-gray-700">鋼鐵工業</button>
+                            <button onclick="selectIndustry('塑膠工業', '全部')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-gray-400 py-2 rounded text-xs md:text-sm text-gray-700">塑膠工業</button>
+                            <button onclick="selectIndustry('建材營造', '全部')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-gray-400 py-2 rounded text-xs md:text-sm text-gray-700">建材營造</button>
+                            <button onclick="selectIndustry('食品工業', '全部')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-gray-400 py-2 rounded text-xs md:text-sm text-gray-700">食品工業</button>
+                            <button onclick="selectIndustry('綠能環保', '全部')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-gray-400 py-2 rounded text-xs md:text-sm text-gray-700">綠能環保</button>
+                            <button onclick="selectIndustry('居家生活', '全部')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-gray-400 py-2 rounded text-xs md:text-sm text-gray-700">居家與百貨</button>
+                        </div>
+                    </div>
+
                 </div>
             </div>
             
-            <div class="p-4 md:p-6 border-t flex-shrink-0 text-right bg-gray-50 rounded-b-lg">
-                <button onclick="toggleIndustryModal()" class="bg-g-blue text-white px-6 py-2 rounded shadow hover:bg-blue-600 font-medium text-sm md:text-base">關閉地圖</button>
+            <div class="p-4 md:p-5 border-t flex-shrink-0 text-right bg-white rounded-b-lg shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-10">
+                <button onclick="toggleIndustryModal()" class="bg-gray-800 text-white px-8 py-2.5 rounded shadow hover:bg-gray-700 font-bold text-sm md:text-base transition-colors">完成選擇</button>
             </div>
         </div>
     </div>
@@ -358,14 +472,15 @@
 
     <script>
         const stockPool = [
+            // 半導體
             { id: "2404", name: "漢唐", category: "半導體", subCategory: "廠務與自動化" },
             { id: "6139", name: "亞翔", category: "半導體", subCategory: "廠務與自動化" },
             { id: "6196", name: "帆宣", category: "半導體", subCategory: "廠務與自動化" },
             { id: "3413", name: "京鼎", category: "半導體", subCategory: "廠務與自動化" },
             { id: "2464", name: "盟立", category: "半導體", subCategory: "廠務與自動化" },
             { id: "6187", name: "萬潤", category: "半導體", subCategory: "廠務與自動化" },
-            { id: "2330", name: "台積電", category: "半導體", subCategory: "前段製造與耗材" },
-            { id: "2303", name: "聯電", category: "半導體", subCategory: "前段製造與耗材" },
+            { id: "2330", name: "台積電", category: "半導體", subCategory: "晶圓代工與製造" },
+            { id: "2303", name: "聯電", category: "半導體", subCategory: "晶圓代工與製造" },
             { id: "3680", name: "家登", category: "半導體", subCategory: "前段製造與耗材" },
             { id: "2338", name: "光罩", category: "半導體", subCategory: "前段製造與耗材" },
             { id: "5434", name: "崇越", category: "半導體", subCategory: "前段製造與耗材" },
@@ -380,6 +495,8 @@
             { id: "3661", name: "世芯-KY", category: "半導體", subCategory: "IC設計" },
             { id: "3443", name: "創意", category: "半導體", subCategory: "IC設計" },
             { id: "3035", name: "智原", category: "半導體", subCategory: "IC設計" },
+            
+            // PCB
             { id: "2383", name: "台光電", category: "PCB", subCategory: "上游材料" },
             { id: "6213", name: "聯茂", category: "PCB", subCategory: "上游材料" },
             { id: "6274", name: "台燿", category: "PCB", subCategory: "上游材料" },
@@ -394,15 +511,51 @@
             { id: "2317", name: "鴻海", category: "PCB", subCategory: "下游組裝與應用" },
             { id: "2382", name: "廣達", category: "PCB", subCategory: "下游組裝與應用" },
             { id: "3231", name: "緯創", category: "PCB", subCategory: "下游組裝與應用" },
-            { id: "2376", name: "技嘉", category: "PCB", subCategory: "下游組裝與應用" }
+            { id: "2376", name: "技嘉", category: "PCB", subCategory: "下游組裝與應用" },
+
+            // 光通訊與CPO
+            { id: "3450", name: "聯鈞", category: "光通訊與CPO", subCategory: "CPO相關" },
+            { id: "6451", name: "訊芯-KY", category: "光通訊與CPO", subCategory: "CPO相關" },
+            { id: "3362", name: "先進光", category: "光通訊與CPO", subCategory: "CPO相關" },
+            { id: "3163", name: "波若威", category: "光通訊與CPO", subCategory: "光通訊相關" },
+            { id: "4979", name: "華星光", category: "光通訊與CPO", subCategory: "光通訊相關" },
+            { id: "4977", name: "眾達-KY", category: "光通訊與CPO", subCategory: "光通訊相關" },
+
+            // 通訊與衛星
+            { id: "3491", name: "昇達科", category: "通訊與衛星", subCategory: "低軌衛星相關" },
+            { id: "6285", name: "啟碁", category: "通訊與衛星", subCategory: "低軌衛星相關" },
+            { id: "5071", name: "鐿鈦", category: "通訊與衛星", subCategory: "低軌衛星相關" },
+            { id: "2314", name: "台揚", category: "通訊與衛星", subCategory: "低軌衛星相關" },
+            { id: "3596", name: "智易", category: "通訊與衛星", subCategory: "網通設備" },
+
+            // 電腦與伺服器
+            { id: "3231", name: "緯創", category: "電腦與伺服器", subCategory: "伺服器代工" },
+            { id: "6669", name: "緯穎", category: "電腦與伺服器", subCategory: "伺服器代工" },
+            { id: "3017", name: "奇鋐", category: "電腦與伺服器", subCategory: "散熱模組" },
+            { id: "3324", name: "雙鴻", category: "電腦與伺服器", subCategory: "散熱模組" },
+            { id: "3653", name: "健策", category: "電腦與伺服器", subCategory: "CPU相關" },
+            { id: "3533", name: "嘉澤", category: "電腦與伺服器", subCategory: "CPU相關" },
+            { id: "3515", name: "華擎", category: "電腦與伺服器", subCategory: "CPU相關" },
+
+            // 其他熱門分類
+            { id: "2308", name: "台達電", category: "電子零組件", subCategory: "全部" },
+            { id: "2327", name: "國巨", category: "電子零組件", subCategory: "被動元件" },
+            { id: "2409", name: "友達", category: "光電業", subCategory: "全部" },
+            { id: "2603", name: "長榮", category: "航運業", subCategory: "全部" },
+            { id: "2881", name: "富邦金", category: "金融保險", subCategory: "全部" },
+            { id: "1519", name: "華城", category: "機電與重電", subCategory: "全部" }
         ];
 
         let stocksData = [];
         let currentSort = { key: 'totalScore', desc: true };
         let activeSymbol = null;
+        
+        // Chart objects
         let chart = null;
         let candlestickSeries = null;
         let volumeSeries = null;
+        let windowSeries = {}; // To store MA series
+        let windowData = {};   // To store loaded raw chart data for calculation
         
         let currentFilters = [];
         let currentIndustryMap = { category: '全部', subCategory: '全部' };
@@ -443,7 +596,7 @@
 
         async function fetchStockData() {
             const finalData = [];
-            const batchSize = 5; 
+            const batchSize = 6; 
             const token = localStorage.getItem('finmindToken') || '';
             const tokenParam = token ? `&token=${token}` : '';
 
@@ -550,7 +703,7 @@
                                 isMock: false
                             };
                         }
-                        throw new Error('API Rate Limit or Empty Data');
+                        throw new Error('API Error');
                     } catch (e) {
                         return generateMockStockData(stock, i + batchIdx);
                     }
@@ -563,8 +716,8 @@
                     }
                 });
 
-                if (i + batchSize < stockPool.length) {
-                    await new Promise(r => setTimeout(r, 600)); 
+                if (i + batchSize < stockPool.length && token) {
+                    await new Promise(r => setTimeout(r, 300)); 
                 }
             }
             return finalData;
@@ -667,7 +820,6 @@
 
             if(processedData.length > 0) {
                 const sortedByChg = [...processedData].sort((a,b) => b.changePercent - a.changePercent);
-                
                 const strongNames = sortedByChg.slice(0, 10).map(s => 
                     `<span class="bg-white border border-gray-200 px-3 py-1 rounded-full text-[12px] md:text-sm font-bold text-gray-700 shadow-sm whitespace-nowrap">${s.name}(${s.id})</span>`
                 ).join('');
@@ -799,7 +951,6 @@
             renderTable();
 
             document.getElementById('detail-title').innerText = `${stock.id} ${stock.name}`;
-            document.getElementById('detail-subtitle').innerText = `板塊: ${stock.category} - ${stock.subCategory} | 綜合評分: ${stock.totalScore}`;
             document.getElementById('detail-action').classList.remove('hidden');
             document.getElementById('trade-tips-panel').classList.remove('hidden');
 
@@ -825,6 +976,39 @@
             loadChartData(stock);
         }
 
+        // MA calculation helper
+        function calculateSMA(data, period) {
+            const result = [];
+            for (let i = 0; i < data.length; i++) {
+                if (i < period - 1) continue;
+                let sum = 0;
+                for (let j = 0; j < period; j++) sum += data[i - j].close;
+                result.push({ time: data[i].time, value: sum / period });
+            }
+            return result;
+        }
+
+        // Mock Event Markers Generator
+        function generateMockMarkers(data, stockId) {
+            const markers = [];
+            data.forEach((candle) => {
+                const dateObj = new Date(candle.time);
+                // 每月 10 號發布營收
+                if (dateObj.getDate() === 10) {
+                    markers.push({ time: candle.time, position: 'belowBar', color: '#EA4335', shape: 'circle', text: '營' });
+                }
+                // 隨機除權息
+                if (dateObj.getDate() === 25 && dateObj.getMonth() % 5 === 0) {
+                    markers.push({ time: candle.time, position: 'aboveBar', color: '#4285F4', shape: 'arrowDown', text: '息' });
+                }
+                // 隨機法說會
+                if (dateObj.getDate() === 15 && dateObj.getMonth() % 4 === 0) {
+                    markers.push({ time: candle.time, position: 'aboveBar', color: '#FBBC05', shape: 'arrowDown', text: '法' });
+                }
+            });
+            return markers;
+        }
+
         function generateMockChartData(currentPrice) {
             const candles = [], volumes = [];
             let p = currentPrice * 0.8; 
@@ -840,6 +1024,33 @@
                 p = close;
             }
             return { candles, volumes };
+        }
+
+        function toggleChartSeries() {
+            if (!chart) return;
+            
+            ['ma5', 'ma10', 'ma20', 'ma60', 'ma120', 'ma240'].forEach(ma => {
+                const checkbox = document.querySelector(`.chart-toggle-checkbox[data-target="${ma}"]`);
+                if (windowSeries[ma]) {
+                    windowSeries[ma].applyOptions({ visible: checkbox.checked });
+                }
+            });
+
+            // Handle markers
+            const showRev = document.querySelector(`.chart-toggle-checkbox[data-target="marker-rev"]`).checked;
+            const showDiv = document.querySelector(`.chart-toggle-checkbox[data-target="marker-div"]`).checked;
+            const showMeet = document.querySelector(`.chart-toggle-checkbox[data-target="marker-meet"]`).checked;
+
+            if (candlestickSeries && windowData && windowData.candles) {
+                const allMarkers = generateMockMarkers(windowData.candles, activeSymbol);
+                const filteredMarkers = allMarkers.filter(m => {
+                    if (m.text === '營' && showRev) return true;
+                    if (m.text === '息' && showDiv) return true;
+                    if (m.text === '法' && showMeet) return true;
+                    return false;
+                });
+                candlestickSeries.setMarkers(filteredMarkers);
+            }
         }
 
         async function loadChartData(stock) {
@@ -867,6 +1078,13 @@
                     scaleMargins: { top: 0.8, bottom: 0 }
                 });
 
+                windowSeries.ma5 = chart.addLineSeries({ color: '#2962FF', lineWidth: 1, crosshairMarkerVisible: false });
+                windowSeries.ma10 = chart.addLineSeries({ color: '#FF6D00', lineWidth: 1, crosshairMarkerVisible: false });
+                windowSeries.ma20 = chart.addLineSeries({ color: '#E91E63', lineWidth: 2, crosshairMarkerVisible: false });
+                windowSeries.ma60 = chart.addLineSeries({ color: '#00C853', lineWidth: 2, crosshairMarkerVisible: false });
+                windowSeries.ma120 = chart.addLineSeries({ color: '#9C27B0', lineWidth: 1, crosshairMarkerVisible: false });
+                windowSeries.ma240 = chart.addLineSeries({ color: '#795548', lineWidth: 1, crosshairMarkerVisible: false });
+
                 new ResizeObserver(() => {
                     window.requestAnimationFrame(() => {
                         if (container && container.clientWidth > 0 && container.clientHeight > 0) {
@@ -874,13 +1092,19 @@
                         }
                     });
                 }).observe(container);
+
+                // Bind checkbox events
+                document.querySelectorAll('.chart-toggle-checkbox').forEach(cb => {
+                    cb.addEventListener('change', toggleChartSeries);
+                });
             }
 
             let chartData = null;
             try {
                 const token = localStorage.getItem('finmindToken') || '';
                 const tokenParam = token ? `&token=${token}` : '';
-                const d = new Date(); d.setMonth(d.getMonth() - 6);
+                // 抓取更長的時間以計算長均線(240MA)
+                const d = new Date(); d.setDate(d.getDate() - 400);
                 const startDate = d.toISOString().split('T')[0];
                 const url = `https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockPrice&data_id=${stock.id}&start_date=${startDate}${tokenParam}`;
                 
@@ -903,8 +1127,24 @@
 
             if (!chartData) chartData = generateMockChartData(stock.price);
 
+            // Store data for toggling
+            windowData = chartData;
+
             candlestickSeries.setData(chartData.candles);
             volumeSeries.setData(chartData.volumes);
+            
+            // Set MA data
+            if(windowSeries.ma5) windowSeries.ma5.setData(calculateSMA(chartData.candles, 5));
+            if(windowSeries.ma10) windowSeries.ma10.setData(calculateSMA(chartData.candles, 10));
+            if(windowSeries.ma20) windowSeries.ma20.setData(calculateSMA(chartData.candles, 20));
+            if(windowSeries.ma60) windowSeries.ma60.setData(calculateSMA(chartData.candles, 60));
+            if(windowSeries.ma120) windowSeries.ma120.setData(calculateSMA(chartData.candles, 120));
+            if(windowSeries.ma240) windowSeries.ma240.setData(calculateSMA(chartData.candles, 240));
+
+            // Apply toggles state
+            toggleChartSeries();
+
+            // 適當縮放時間軸
             chart.timeScale().fitContent();
             
             loading.classList.add('hidden');
