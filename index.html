@@ -205,7 +205,7 @@
                 <div class="flex-1 relative">
                     <div id="chart-loading" class="hidden absolute inset-0 bg-white/90 flex flex-col items-center justify-center text-g-blue font-medium z-10 gap-2">
                         <svg class="animate-spin h-6 w-6 text-g-blue" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                        載入 K 線資料中...
+                        繪製 K 線資料中...
                     </div>
                     <div id="tv_chart_container" class="w-full h-full absolute inset-0"></div>
                 </div>
@@ -548,10 +548,8 @@
             { id: "3450", name: "聯鈞", category: "光通訊與CPO", subCategory: "CPO相關" },
             { id: "6451", name: "訊芯-KY", category: "光通訊與CPO", subCategory: "CPO相關" },
             { id: "3362", name: "先進光", category: "光通訊與CPO", subCategory: "CPO相關" },
-            { id: "6442", name: "光聖", category: "光通訊與CPO", subCategory: "CPO相關" },
             { id: "3163", name: "波若威", category: "光通訊與CPO", subCategory: "光通訊相關" },
             { id: "4979", name: "華星光", category: "光通訊與CPO", subCategory: "光通訊相關" },
-            { id: "3234", name: "光環", category: "光通訊與CPO", subCategory: "光通訊相關" },
             { id: "4977", name: "眾達-KY", category: "光通訊與CPO", subCategory: "光通訊相關" },
 
             { id: "3491", name: "昇達科", category: "通訊與衛星", subCategory: "低軌衛星相關" },
@@ -566,7 +564,6 @@
             { id: "3324", name: "雙鴻", category: "電腦與伺服器", subCategory: "散熱模組" },
             { id: "3653", name: "健策", category: "電腦與伺服器", subCategory: "CPU相關" },
             { id: "3533", name: "嘉澤", category: "電腦與伺服器", subCategory: "CPU相關" },
-            { id: "2388", name: "威盛", category: "電腦與伺服器", subCategory: "CPU相關" },
             { id: "3515", name: "華擎", category: "電腦與伺服器", subCategory: "CPU相關" },
 
             { id: "2308", name: "台達電", category: "電子零組件", subCategory: "全部" },
@@ -613,6 +610,19 @@
             const high240d = isStrong ? price * getRandom(1, 1.1) : price * getRandom(1.1, 1.5);
             const low240d = forceTempleton ? price * getRandom(0.88, 0.95) : (isStrong ? price * getRandom(0.5, 0.7) : price * getRandom(0.5, 0.9));
 
+            const rawHistoricalData = [];
+            let p = price * 0.8; 
+            const d = new Date(); d.setDate(d.getDate() - 400);
+            for (let i = 0; i < 280; i++) {
+                d.setDate(d.getDate() + (d.getDay() === 5 ? 3 : 1));
+                const t = d.toISOString().split('T')[0];
+                const open = p, close = open * getRandom(0.96, 1.04);
+                const high = Math.max(open, close) * getRandom(1, 1.03), low = Math.min(open, close) * getRandom(0.97, 1);
+                rawHistoricalData.push({ date: t, open, max: high, min: low, close, Trading_Volume: Math.floor(getRandom(1000, 50000)) * 1000 });
+                p = close;
+            }
+            rawHistoricalData[rawHistoricalData.length - 1].close = price;
+
             return {
                 ...stock,
                 price, changePercent, volume, avgVolume5d,
@@ -630,6 +640,7 @@
                 trustBuy: forceTempleton ? true : (isStrong ? getBool(0.7) : getBool(0.3)),
                 marginDecrease: false, retailDecrease: false,
                 largeHolderIncrease: false, top10Concentrated: false,
+                rawHistoricalData,
                 isMock: true
             };
         }
@@ -754,6 +765,7 @@
                                 foreignBuy3d, trustBuy,
                                 marginDecrease: false, retailDecrease: false,
                                 largeHolderIncrease: false, top10Concentrated: false,
+                                rawHistoricalData: quotes,
                                 isMock: false
                             };
                         }
@@ -1085,23 +1097,6 @@
             return markers;
         }
 
-        function generateMockChartData(currentPrice) {
-            const candles = [], volumes = [];
-            let p = currentPrice * 0.8; 
-            const d = new Date(); d.setDate(d.getDate() - 100);
-            for (let i = 0; i < 100; i++) {
-                d.setDate(d.getDate() + 1);
-                if (d.getDay() === 0 || d.getDay() === 6) continue;
-                const t = d.toISOString().split('T')[0];
-                const open = p, close = open * getRandom(0.96, 1.04);
-                const high = Math.max(open, close) * getRandom(1, 1.03), low = Math.min(open, close) * getRandom(0.97, 1);
-                candles.push({ time: t, open, high, low, close });
-                volumes.push({ time: t, value: Math.floor(getRandom(1000, 50000)), color: close >= open ? '#EF444488' : '#22C55E88' });
-                p = close;
-            }
-            return { candles, volumes };
-        }
-
         function toggleChartSeries() {
             if (!chart) return;
             
@@ -1174,29 +1169,20 @@
             }
 
             let chartData = null;
-            try {
-                const token = localStorage.getItem('finmindToken') || '';
-                const tokenParam = token ? `&token=${token}` : '';
-                const d = new Date(); d.setMonth(d.getMonth() - 14);
-                const startDate = d.toISOString().split('T')[0];
-                const url = `https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockPrice&data_id=${stock.id}&start_date=${startDate}${tokenParam}`;
-                
-                const res = await fetch(url);
-                if (res.ok) {
-                    const json = await res.json();
-                    if (json.msg === 'success' && json.data && json.data.length > 0) {
-                        const candles = [];
-                        const volumes = [];
-                        json.data.forEach(row => {
-                            const time = row.date;
-                            const open = row.open, high = row.max, low = row.min, close = row.close;
-                            candles.push({ time, open, high, low, close });
-                            volumes.push({ time, value: row.Trading_Volume / 1000, color: close >= open ? '#EF444488' : '#22C55E88' });
-                        });
-                        chartData = { candles, volumes };
-                    }
-                }
-            } catch (e) {}
+            if (stock.rawHistoricalData && stock.rawHistoricalData.length > 0) {
+                const candles = [];
+                const volumes = [];
+                stock.rawHistoricalData.forEach(row => {
+                    const time = row.date;
+                    const open = row.open, high = row.max, low = row.min, close = row.close;
+                    
+                    if (candles.length > 0 && candles[candles.length - 1].time >= time) return;
+
+                    candles.push({ time, open, high, low, close });
+                    volumes.push({ time, value: row.Trading_Volume / 1000, color: close >= open ? '#EF444488' : '#22C55E88' });
+                });
+                chartData = { candles, volumes };
+            }
 
             if (!chartData) chartData = generateMockChartData(stock.price);
 
