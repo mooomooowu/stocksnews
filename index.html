@@ -264,7 +264,7 @@
                             <div>
                                 <h4 class="text-sm font-bold text-purple-800 mb-2 flex items-center gap-1.5"><span class="w-1.5 h-4 bg-purple-500 rounded"></span>光通訊與 CPO</h4>
                                 <div class="grid grid-cols-2 gap-2">
-                                    <button onclick="selectIndustry('光通訊與CPO', '光通訊相關')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-purple-300 py-1.5 rounded text-xs md:text-sm text-gray-700">光通訊元件</button>
+                                    <button onclick="selectIndustry('光通訊與CPO', '光通訊相關')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-purple-300 py-1.5 rounded text-xs md:text-sm text-gray-700">光通訊相關</button>
                                     <button onclick="selectIndustry('光通訊與CPO', 'CPO相關')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-purple-300 py-1.5 rounded text-xs md:text-sm text-gray-700">CPO共同封裝</button>
                                 </div>
                             </div>
@@ -274,7 +274,7 @@
                                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
                                     <button onclick="selectIndustry('電腦與伺服器', '伺服器代工')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-orange-300 py-1.5 rounded text-xs md:text-sm text-gray-700">伺服器代工</button>
                                     <button onclick="selectIndustry('電腦與伺服器', '散熱模組')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-orange-300 py-1.5 rounded text-xs md:text-sm text-gray-700">散熱模組</button>
-                                    <button onclick="selectIndustry('電腦與伺服器', 'CPU相關')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-orange-300 py-1.5 rounded text-xs md:text-sm text-gray-700">CPU/主機板</button>
+                                    <button onclick="selectIndustry('電腦與伺服器', 'CPU相關')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-orange-300 py-1.5 rounded text-xs md:text-sm text-gray-700">CPU相關</button>
                                 </div>
                             </div>
                         </div>
@@ -338,7 +338,6 @@
         </div>
     </div>
 
-    <!-- 進階篩選器 Modal -->
     <div id="filter-modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4">
         <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl flex flex-col max-h-[90vh]">
             <div class="flex justify-between items-center p-4 md:p-6 border-b flex-shrink-0">
@@ -355,7 +354,7 @@
                 
                 <div class="mb-8">
                     <h3 class="text-sm font-bold text-blue-800 mb-3 border-b pb-2">經典大師策略</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <div onclick="applyFilter('SEPA 策略', this)" class="filter-card border rounded p-4 cursor-pointer hover:border-blue-400 transition-all bg-blue-50/30">
                             <div class="flex justify-between items-start mb-2">
                                 <span class="font-bold text-gray-800 text-base">SEPA 策略 (超級績效)</span>
@@ -366,6 +365,30 @@
                                 <p>• 120日線 > 240日線 (多頭排列)</p>
                                 <p>• 240日線趨勢向上 (斜率為正)</p>
                                 <p>• 距離 52週低點至少 30% 且 接近 52週高點</p>
+                            </div>
+                        </div>
+                        <div onclick="applyFilter('CANSLIM 策略', this)" class="filter-card border rounded p-4 cursor-pointer hover:border-blue-400 transition-all bg-blue-50/30">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="font-bold text-gray-800 text-base">CANSLIM 策略 (歐尼爾)</span>
+                                <span class="bg-red-50 text-red-600 text-xs px-2 py-1 rounded font-bold">大師</span>
+                            </div>
+                            <div class="text-sm text-gray-600 space-y-1">
+                                <p>• N：股價接近 52 週新高 (距離 < 10%)</p>
+                                <p>• S：量能突破 (成交量大於均量)</p>
+                                <p>• L：市場強勢領導股 (RSI > 60)</p>
+                                <p>• I：法人籌碼進駐 (外資或投信買盤)</p>
+                                <p>• M：大盤/個股偏多 (站上季線)</p>
+                            </div>
+                        </div>
+                        <div onclick="applyFilter('坦伯頓策略', this)" class="filter-card border rounded p-4 cursor-pointer hover:border-blue-400 transition-all bg-blue-50/30">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="font-bold text-gray-800 text-base">坦伯頓策略 (逆向價值)</span>
+                                <span class="bg-red-50 text-red-600 text-xs px-2 py-1 rounded font-bold">大師</span>
+                            </div>
+                            <div class="text-sm text-gray-600 space-y-1">
+                                <p>• 買在極度悲觀：股價接近 52 週新低 (距離 < 15%)</p>
+                                <p>• 尋找便宜貨：RSI < 45 (處於相對低檔區)</p>
+                                <p>• 品質確保：法人逢低承接 (外資或投信買盤)</p>
                             </div>
                         </div>
                     </div>
@@ -571,7 +594,9 @@
         const getBool = (chance = 0.5) => Math.random() < chance;
 
         function generateMockStockData(stock, index = 0) {
+            const forceTempleton = index % 4 === 0;
             const forceStrong = index % 3 === 0;
+            
             const price = parseFloat(getRandom(50, 800).toFixed(1));
             const changePercent = forceStrong ? parseFloat(getRandom(2, 9.5).toFixed(2)) : parseFloat(getRandom(-4, 5).toFixed(2));
             const isStrong = forceStrong || changePercent > 1;
@@ -584,8 +609,9 @@
             const ma120 = price * (isStrong ? getRandom(0.8, 0.9) : getRandom(0.8, 1.2));
             const ma240 = price * (isStrong ? getRandom(0.7, 0.85) : getRandom(0.7, 1.3));
             const ma240_20d_ago = ma240 * 0.98;
+            
             const high240d = isStrong ? price * getRandom(1, 1.1) : price * getRandom(1.1, 1.5);
-            const low240d = isStrong ? price * getRandom(0.5, 0.7) : price * getRandom(0.5, 0.9);
+            const low240d = forceTempleton ? price * getRandom(0.88, 0.95) : (isStrong ? price * getRandom(0.5, 0.7) : price * getRandom(0.5, 0.9));
 
             return {
                 ...stock,
@@ -599,9 +625,9 @@
                 high240d, low240d,
                 bias: ((price - ma20) / ma20) * 100,
                 macdHist: isStrong ? getRandom(0.5, 2) : getRandom(-1, 0.5),
-                rsi: isStrong ? getRandom(55, 85) : getRandom(15, 45),
-                foreignBuy3d: isStrong ? getBool(0.7) : getBool(0.3),
-                trustBuy: isStrong ? getBool(0.7) : getBool(0.3),
+                rsi: forceTempleton ? getRandom(20, 40) : (isStrong ? getRandom(55, 85) : getRandom(15, 45)),
+                foreignBuy3d: forceTempleton ? true : (isStrong ? getBool(0.7) : getBool(0.3)),
+                trustBuy: forceTempleton ? true : (isStrong ? getBool(0.7) : getBool(0.3)),
                 marginDecrease: false, retailDecrease: false,
                 largeHolderIncrease: false, top10Concentrated: false,
                 isMock: true
@@ -795,6 +821,22 @@
                                     s.price > s.ma60 &&
                                     s.price >= s.low240d * 1.3 &&
                                     s.price >= s.high240d * 0.75
+                                );
+                                break;
+                            case 'CANSLIM 策略':
+                                passThisFilter = (
+                                    s.price >= s.high240d * 0.9 &&
+                                    s.volume > s.avgVolume5d * 1.2 &&
+                                    s.rsi >= 60 &&
+                                    (s.foreignBuy3d || s.trustBuy) &&
+                                    s.price > s.ma60
+                                );
+                                break;
+                            case '坦伯頓策略':
+                                passThisFilter = (
+                                    s.price <= s.low240d * 1.15 &&
+                                    s.rsi < 45 &&
+                                    (s.foreignBuy3d || s.trustBuy)
                                 );
                                 break;
                             case '適合買進': passThisFilter = (totalScore >= threshold); break;
