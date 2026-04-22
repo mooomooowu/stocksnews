@@ -45,7 +45,6 @@
         .filter-card.active { border-color: #4285F4; background-color: #F8F9FA; box-shadow: 0 0 0 1px #4285F4; }
         .industry-btn.active { background-color: #4285F4; color: white; border-color: #4285F4; }
         
-        /* Checkbox styling for chart settings */
         .chart-toggle-checkbox {
             appearance: none;
             width: 14px;
@@ -128,7 +127,6 @@
                 </div>
             </div>
 
-            <!-- 台股篩選摘要面板 -->
             <div id="summary-panel" class="bg-white border border-gray-200 rounded-lg p-3 md:p-4 shadow-sm flex-shrink-0 text-sm hidden">
                 <div class="flex flex-wrap items-center gap-2 text-gray-500 text-[11px] md:text-xs mb-2 md:mb-3 border-b pb-2">
                     <span>資料日期：<span id="sum-date" class="font-medium"></span></span>
@@ -176,7 +174,6 @@
             </div>
         </div>
 
-        <!-- 右側：K線圖表區 -->
         <div class="lg:col-span-7 flex flex-col gap-3 md:gap-4 h-[65vh] min-h-[500px] lg:h-full lg:min-h-0">
             <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-3 md:p-4 flex-shrink-0 flex flex-wrap justify-between items-center gap-2">
                 <div>
@@ -189,7 +186,6 @@
             </div>
             
             <div class="bg-white border border-gray-200 rounded-lg shadow-sm flex-1 flex flex-col relative overflow-hidden">
-                <!-- 圖表指標設定列 -->
                 <div class="bg-gray-50 border-b border-gray-200 p-2 md:p-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] md:text-xs font-medium text-gray-600">
                     <div class="flex items-center gap-3 border-r pr-3">
                         <label class="flex items-center gap-1 cursor-pointer hover:text-gray-800"><input type="checkbox" class="chart-toggle-checkbox" data-target="ma5" checked><span class="text-[#2962FF]">5MA</span></label>
@@ -234,7 +230,6 @@
         </div>
     </main>
 
-    <!-- 產業地圖 Modal -->
     <div id="industry-modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4">
         <div class="bg-white rounded-lg shadow-xl w-full max-w-5xl flex flex-col max-h-[90vh]">
             <div class="flex justify-between items-center p-4 md:p-6 border-b flex-shrink-0">
@@ -251,7 +246,6 @@
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     
-                    <!-- 科技熱門題材區 -->
                     <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
                         <h3 class="font-bold text-lg text-gray-800 mb-4 border-b pb-2 flex items-center gap-2">🔥 科技與熱門題材</h3>
                         
@@ -270,7 +264,7 @@
                             <div>
                                 <h4 class="text-sm font-bold text-purple-800 mb-2 flex items-center gap-1.5"><span class="w-1.5 h-4 bg-purple-500 rounded"></span>光通訊與 CPO</h4>
                                 <div class="grid grid-cols-2 gap-2">
-                                    <button onclick="selectIndustry('光通訊與CPO', '光通訊相關')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-purple-300 py-1.5 rounded text-xs md:text-sm text-gray-700">光通訊相關</button>
+                                    <button onclick="selectIndustry('光通訊與CPO', '光通訊相關')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-purple-300 py-1.5 rounded text-xs md:text-sm text-gray-700">光通訊元件</button>
                                     <button onclick="selectIndustry('光通訊與CPO', 'CPO相關')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-purple-300 py-1.5 rounded text-xs md:text-sm text-gray-700">CPO共同封裝</button>
                                 </div>
                             </div>
@@ -280,13 +274,12 @@
                                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
                                     <button onclick="selectIndustry('電腦與伺服器', '伺服器代工')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-orange-300 py-1.5 rounded text-xs md:text-sm text-gray-700">伺服器代工</button>
                                     <button onclick="selectIndustry('電腦與伺服器', '散熱模組')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-orange-300 py-1.5 rounded text-xs md:text-sm text-gray-700">散熱模組</button>
-                                    <button onclick="selectIndustry('電腦與伺服器', 'CPU相關')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-orange-300 py-1.5 rounded text-xs md:text-sm text-gray-700">CPU相關</button>
+                                    <button onclick="selectIndustry('電腦與伺服器', 'CPU相關')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-orange-300 py-1.5 rounded text-xs md:text-sm text-gray-700">CPU/主機板</button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- 電子零組件與網通 -->
                     <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
                         <h3 class="font-bold text-lg text-gray-800 mb-4 border-b pb-2 flex items-center gap-2">🔌 零組件與網通產業</h3>
                         
@@ -319,7 +312,6 @@
                         </div>
                     </div>
 
-                    <!-- 傳統產業與金融 -->
                     <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm lg:col-span-2">
                         <h3 class="font-bold text-lg text-gray-800 mb-4 border-b pb-2 flex items-center gap-2">🏭 傳統產業與金融</h3>
                         
@@ -360,6 +352,25 @@
             </div>
 
             <div class="p-4 md:p-6 overflow-y-auto">
+                
+                <div class="mb-8">
+                    <h3 class="text-sm font-bold text-blue-800 mb-3 border-b pb-2">經典大師策略</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div onclick="applyFilter('SEPA 策略', this)" class="filter-card border rounded p-4 cursor-pointer hover:border-blue-400 transition-all bg-blue-50/30">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="font-bold text-gray-800 text-base">SEPA 策略 (超級績效)</span>
+                                <span class="bg-red-50 text-red-600 text-xs px-2 py-1 rounded font-bold">大師</span>
+                            </div>
+                            <div class="text-sm text-gray-600 space-y-1">
+                                <p>• 價格在 120日 及 240日 均線之上</p>
+                                <p>• 120日線 > 240日線 (多頭排列)</p>
+                                <p>• 240日線趨勢向上 (斜率為正)</p>
+                                <p>• 距離 52週低點至少 30% 且 接近 52週高點</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="mb-8">
                     <h3 class="text-sm font-bold text-gray-700 mb-3">簡易篩選條件</h3>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -472,7 +483,6 @@
 
     <script>
         const stockPool = [
-            // 半導體
             { id: "2404", name: "漢唐", category: "半導體", subCategory: "廠務與自動化" },
             { id: "6139", name: "亞翔", category: "半導體", subCategory: "廠務與自動化" },
             { id: "6196", name: "帆宣", category: "半導體", subCategory: "廠務與自動化" },
@@ -496,7 +506,6 @@
             { id: "3443", name: "創意", category: "半導體", subCategory: "IC設計" },
             { id: "3035", name: "智原", category: "半導體", subCategory: "IC設計" },
             
-            // PCB
             { id: "2383", name: "台光電", category: "PCB", subCategory: "上游材料" },
             { id: "6213", name: "聯茂", category: "PCB", subCategory: "上游材料" },
             { id: "6274", name: "台燿", category: "PCB", subCategory: "上游材料" },
@@ -513,31 +522,30 @@
             { id: "3231", name: "緯創", category: "PCB", subCategory: "下游組裝與應用" },
             { id: "2376", name: "技嘉", category: "PCB", subCategory: "下游組裝與應用" },
 
-            // 光通訊與CPO
             { id: "3450", name: "聯鈞", category: "光通訊與CPO", subCategory: "CPO相關" },
             { id: "6451", name: "訊芯-KY", category: "光通訊與CPO", subCategory: "CPO相關" },
             { id: "3362", name: "先進光", category: "光通訊與CPO", subCategory: "CPO相關" },
+            { id: "6442", name: "光聖", category: "光通訊與CPO", subCategory: "CPO相關" },
             { id: "3163", name: "波若威", category: "光通訊與CPO", subCategory: "光通訊相關" },
             { id: "4979", name: "華星光", category: "光通訊與CPO", subCategory: "光通訊相關" },
+            { id: "3234", name: "光環", category: "光通訊與CPO", subCategory: "光通訊相關" },
             { id: "4977", name: "眾達-KY", category: "光通訊與CPO", subCategory: "光通訊相關" },
 
-            // 通訊與衛星
             { id: "3491", name: "昇達科", category: "通訊與衛星", subCategory: "低軌衛星相關" },
             { id: "6285", name: "啟碁", category: "通訊與衛星", subCategory: "低軌衛星相關" },
             { id: "5071", name: "鐿鈦", category: "通訊與衛星", subCategory: "低軌衛星相關" },
             { id: "2314", name: "台揚", category: "通訊與衛星", subCategory: "低軌衛星相關" },
             { id: "3596", name: "智易", category: "通訊與衛星", subCategory: "網通設備" },
 
-            // 電腦與伺服器
             { id: "3231", name: "緯創", category: "電腦與伺服器", subCategory: "伺服器代工" },
             { id: "6669", name: "緯穎", category: "電腦與伺服器", subCategory: "伺服器代工" },
             { id: "3017", name: "奇鋐", category: "電腦與伺服器", subCategory: "散熱模組" },
             { id: "3324", name: "雙鴻", category: "電腦與伺服器", subCategory: "散熱模組" },
             { id: "3653", name: "健策", category: "電腦與伺服器", subCategory: "CPU相關" },
             { id: "3533", name: "嘉澤", category: "電腦與伺服器", subCategory: "CPU相關" },
+            { id: "2388", name: "威盛", category: "電腦與伺服器", subCategory: "CPU相關" },
             { id: "3515", name: "華擎", category: "電腦與伺服器", subCategory: "CPU相關" },
 
-            // 其他熱門分類
             { id: "2308", name: "台達電", category: "電子零組件", subCategory: "全部" },
             { id: "2327", name: "國巨", category: "電子零組件", subCategory: "被動元件" },
             { id: "2409", name: "友達", category: "光電業", subCategory: "全部" },
@@ -550,12 +558,11 @@
         let currentSort = { key: 'totalScore', desc: true };
         let activeSymbol = null;
         
-        // Chart objects
         let chart = null;
         let candlestickSeries = null;
         let volumeSeries = null;
-        let windowSeries = {}; // To store MA series
-        let windowData = {};   // To store loaded raw chart data for calculation
+        let windowSeries = {}; 
+        let windowData = {};   
         
         let currentFilters = [];
         let currentIndustryMap = { category: '全部', subCategory: '全部' };
@@ -574,6 +581,12 @@
             const volume = Math.floor(getRandom(2000, 50000));
             const avgVolume5d = isStrong ? volume / getRandom(1.5, 2.5) : volume * getRandom(0.8, 1.2);
 
+            const ma120 = price * (isStrong ? getRandom(0.8, 0.9) : getRandom(0.8, 1.2));
+            const ma240 = price * (isStrong ? getRandom(0.7, 0.85) : getRandom(0.7, 1.3));
+            const ma240_20d_ago = ma240 * 0.98;
+            const high240d = isStrong ? price * getRandom(1, 1.1) : price * getRandom(1.1, 1.5);
+            const low240d = isStrong ? price * getRandom(0.5, 0.7) : price * getRandom(0.5, 0.9);
+
             return {
                 ...stock,
                 price, changePercent, volume, avgVolume5d,
@@ -581,8 +594,9 @@
                 estVolume: volume * (isStrong ? getRandom(1.2, 1.5) : 1.1),
                 ma5: ma20 * (isStrong ? getRandom(1.01, 1.05) : getRandom(0.98, 1.02)),
                 ma10: ma20 * (isStrong ? getRandom(1.0, 1.03) : getRandom(0.98, 1.02)),
-                ma20, ma60,
+                ma20, ma60, ma120, ma240, ma240_20d_ago,
                 high20d: isStrong ? price * getRandom(0.98, 1.01) : price * getRandom(1.05, 1.2),
+                high240d, low240d,
                 bias: ((price - ma20) / ma20) * 100,
                 macdHist: isStrong ? getRandom(0.5, 2) : getRandom(-1, 0.5),
                 rsi: isStrong ? getRandom(55, 85) : getRandom(15, 45),
@@ -600,7 +614,7 @@
             const token = localStorage.getItem('finmindToken') || '';
             const tokenParam = token ? `&token=${token}` : '';
 
-            const d = new Date(); d.setDate(d.getDate() - 100);
+            const d = new Date(); d.setDate(d.getDate() - 400); 
             const startDate = d.toISOString().split('T')[0];
             const instD = new Date(); instD.setDate(instD.getDate() - 10);
             const instStartDate = instD.toISOString().split('T')[0];
@@ -635,7 +649,19 @@
                                 return slice.reduce((a, b) => a + b.close, 0) / days;
                             };
 
+                            const getMA_offset = (days, offset) => {
+                                if (quotes.length < days + offset) return price;
+                                const slice = quotes.slice(-(days + offset), quotes.length - offset);
+                                return slice.reduce((a, b) => a + b.close, 0) / days;
+                            };
+
                             const ma20 = getMA(20);
+                            const ma120 = getMA(120);
+                            const ma240 = getMA(240);
+                            const ma240_20d_ago = getMA_offset(240, 20);
+
+                            const high240d = Math.max(...quotes.slice(-240).map(v => v.max));
+                            const low240d = Math.min(...quotes.slice(-240).map(v => v.min));
 
                             let rsi = 50;
                             if (closePrices.length >= 15) {
@@ -694,7 +720,9 @@
                                 yesterdayVolume,
                                 estVolume: volume * 1.1,
                                 ma5: getMA(5), ma10: getMA(10), ma20, ma60: getMA(60),
+                                ma120, ma240, ma240_20d_ago,
                                 high20d: Math.max(...quotes.slice(-20).map(v => v.max)),
+                                high240d, low240d,
                                 bias: ((price - ma20) / ma20) * 100,
                                 macdHist, rsi,
                                 foreignBuy3d, trustBuy,
@@ -758,6 +786,17 @@
                     for (let filter of currentFilters) {
                         let passThisFilter = false;
                         switch (filter) {
+                            case 'SEPA 策略': 
+                                passThisFilter = (
+                                    s.price > s.ma120 && 
+                                    s.price > s.ma240 &&
+                                    s.ma120 > s.ma240 &&
+                                    s.ma240 > s.ma240_20d_ago &&
+                                    s.price > s.ma60 &&
+                                    s.price >= s.low240d * 1.3 &&
+                                    s.price >= s.high240d * 0.75
+                                );
+                                break;
                             case '適合買進': passThisFilter = (totalScore >= threshold); break;
                             case '考慮賣出': passThisFilter = (s.price < s.ma20 || totalScore < 60); break;
                             case '量能異動': passThisFilter = (s.volume >= s.avgVolume5d * volMulti); break;
@@ -976,7 +1015,6 @@
             loadChartData(stock);
         }
 
-        // MA calculation helper
         function calculateSMA(data, period) {
             const result = [];
             for (let i = 0; i < data.length; i++) {
@@ -988,20 +1026,16 @@
             return result;
         }
 
-        // Mock Event Markers Generator
         function generateMockMarkers(data, stockId) {
             const markers = [];
             data.forEach((candle) => {
                 const dateObj = new Date(candle.time);
-                // 每月 10 號發布營收
                 if (dateObj.getDate() === 10) {
                     markers.push({ time: candle.time, position: 'belowBar', color: '#EA4335', shape: 'circle', text: '營' });
                 }
-                // 隨機除權息
                 if (dateObj.getDate() === 25 && dateObj.getMonth() % 5 === 0) {
                     markers.push({ time: candle.time, position: 'aboveBar', color: '#4285F4', shape: 'arrowDown', text: '息' });
                 }
-                // 隨機法說會
                 if (dateObj.getDate() === 15 && dateObj.getMonth() % 4 === 0) {
                     markers.push({ time: candle.time, position: 'aboveBar', color: '#FBBC05', shape: 'arrowDown', text: '法' });
                 }
@@ -1036,7 +1070,6 @@
                 }
             });
 
-            // Handle markers
             const showRev = document.querySelector(`.chart-toggle-checkbox[data-target="marker-rev"]`).checked;
             const showDiv = document.querySelector(`.chart-toggle-checkbox[data-target="marker-div"]`).checked;
             const showMeet = document.querySelector(`.chart-toggle-checkbox[data-target="marker-meet"]`).checked;
@@ -1093,7 +1126,6 @@
                     });
                 }).observe(container);
 
-                // Bind checkbox events
                 document.querySelectorAll('.chart-toggle-checkbox').forEach(cb => {
                     cb.addEventListener('change', toggleChartSeries);
                 });
@@ -1103,8 +1135,7 @@
             try {
                 const token = localStorage.getItem('finmindToken') || '';
                 const tokenParam = token ? `&token=${token}` : '';
-                // 抓取更長的時間以計算長均線(240MA)
-                const d = new Date(); d.setDate(d.getDate() - 400);
+                const d = new Date(); d.setMonth(d.getMonth() - 14);
                 const startDate = d.toISOString().split('T')[0];
                 const url = `https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockPrice&data_id=${stock.id}&start_date=${startDate}${tokenParam}`;
                 
@@ -1127,13 +1158,11 @@
 
             if (!chartData) chartData = generateMockChartData(stock.price);
 
-            // Store data for toggling
             windowData = chartData;
 
             candlestickSeries.setData(chartData.candles);
             volumeSeries.setData(chartData.volumes);
             
-            // Set MA data
             if(windowSeries.ma5) windowSeries.ma5.setData(calculateSMA(chartData.candles, 5));
             if(windowSeries.ma10) windowSeries.ma10.setData(calculateSMA(chartData.candles, 10));
             if(windowSeries.ma20) windowSeries.ma20.setData(calculateSMA(chartData.candles, 20));
@@ -1141,10 +1170,8 @@
             if(windowSeries.ma120) windowSeries.ma120.setData(calculateSMA(chartData.candles, 120));
             if(windowSeries.ma240) windowSeries.ma240.setData(calculateSMA(chartData.candles, 240));
 
-            // Apply toggles state
             toggleChartSeries();
 
-            // 適當縮放時間軸
             chart.timeScale().fitContent();
             
             loading.classList.add('hidden');
