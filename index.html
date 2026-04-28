@@ -230,10 +230,11 @@
         </div>
     </main>
 
+    <!-- 產業地圖 Modal -->
     <div id="industry-modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-lg shadow-xl w-full max-w-5xl flex flex-col max-h-[90vh]">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-6xl flex flex-col max-h-[90vh]">
             <div class="flex justify-between items-center p-4 md:p-6 border-b flex-shrink-0">
-                <h2 class="text-lg md:text-2xl font-bold text-gray-800">全板塊產業分類地圖</h2>
+                <h2 class="text-lg md:text-2xl font-bold text-gray-800">台股全市場產業價值鏈地圖</h2>
                 <button onclick="toggleIndustryModal()" class="text-gray-400 hover:text-gray-800 p-1">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
@@ -244,88 +245,100 @@
                     <button onclick="selectIndustry('全部', '全部')" class="industry-btn active w-full py-3 rounded-lg text-sm border hover:bg-gray-100 transition-colors font-bold shadow-sm">🌐 顯示台股全市場</button>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     
-                    <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
-                        <h3 class="font-bold text-lg text-gray-800 mb-4 border-b pb-2 flex items-center gap-2">🔥 科技與熱門題材</h3>
-                        
-                        <div class="space-y-4">
-                            <div>
-                                <h4 class="text-sm font-bold text-blue-800 mb-2 flex items-center gap-1.5"><span class="w-1.5 h-4 bg-blue-500 rounded"></span>半導體產業鏈</h4>
-                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                                    <button onclick="selectIndustry('半導體', '全部')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-blue-300 py-1.5 rounded text-xs md:text-sm text-gray-700">全板塊</button>
+                    <!-- 科技半導體與通訊 -->
+                    <div class="space-y-6">
+                        <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
+                            <h3 class="font-bold text-lg text-blue-900 mb-3 border-b pb-2 flex items-center gap-2">
+                                <span class="w-2 h-5 bg-blue-500 rounded"></span> 半導體產業鏈
+                            </h3>
+                            <div class="space-y-3">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button onclick="selectIndustry('半導體', '全部')" class="industry-btn col-span-2 bg-gray-50 border border-gray-200 hover:border-blue-300 py-1.5 rounded text-xs md:text-sm text-gray-700 font-bold">全板塊</button>
                                     <button onclick="selectIndustry('半導體', 'IC設計')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-blue-300 py-1.5 rounded text-xs md:text-sm text-gray-700">IC設計</button>
-                                    <button onclick="selectIndustry('半導體', '晶圓代工與製造')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-blue-300 py-1.5 rounded text-xs md:text-sm text-gray-700">代工與製造</button>
-                                    <button onclick="selectIndustry('半導體', '後段封測與設備')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-blue-300 py-1.5 rounded text-xs md:text-sm text-gray-700">封測與設備</button>
+                                    <button onclick="selectIndustry('半導體', '晶圓代工')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-blue-300 py-1.5 rounded text-xs md:text-sm text-gray-700">晶圓代工</button>
+                                    <button onclick="selectIndustry('半導體', '封測與設備')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-blue-300 py-1.5 rounded text-xs md:text-sm text-gray-700">封測與設備</button>
+                                    <button onclick="selectIndustry('半導體', '設備與材料')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-blue-300 py-1.5 rounded text-xs md:text-sm text-gray-700">設備與材料</button>
                                     <button onclick="selectIndustry('半導體', '廠務與自動化')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-blue-300 py-1.5 rounded text-xs md:text-sm text-gray-700">廠務與自動化</button>
                                 </div>
                             </div>
-                            
-                            <div>
-                                <h4 class="text-sm font-bold text-purple-800 mb-2 flex items-center gap-1.5"><span class="w-1.5 h-4 bg-purple-500 rounded"></span>光通訊與 CPO</h4>
-                                <div class="grid grid-cols-2 gap-2">
-                                    <button onclick="selectIndustry('光通訊與CPO', '光通訊相關')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-purple-300 py-1.5 rounded text-xs md:text-sm text-gray-700">光通訊相關</button>
-                                    <button onclick="selectIndustry('光通訊與CPO', 'CPO相關')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-purple-300 py-1.5 rounded text-xs md:text-sm text-gray-700">CPO共同封裝</button>
-                                </div>
-                            </div>
+                        </div>
 
-                            <div>
-                                <h4 class="text-sm font-bold text-orange-800 mb-2 flex items-center gap-1.5"><span class="w-1.5 h-4 bg-orange-500 rounded"></span>電腦與伺服器</h4>
-                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                                    <button onclick="selectIndustry('電腦與伺服器', '伺服器代工')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-orange-300 py-1.5 rounded text-xs md:text-sm text-gray-700">伺服器代工</button>
-                                    <button onclick="selectIndustry('電腦與伺服器', '散熱模組')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-orange-300 py-1.5 rounded text-xs md:text-sm text-gray-700">散熱模組</button>
-                                    <button onclick="selectIndustry('電腦與伺服器', 'CPU相關')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-orange-300 py-1.5 rounded text-xs md:text-sm text-gray-700">CPU相關</button>
+                        <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
+                            <h3 class="font-bold text-lg text-purple-900 mb-3 border-b pb-2 flex items-center gap-2">
+                                <span class="w-2 h-5 bg-purple-500 rounded"></span> 通訊與光電
+                            </h3>
+                            <div class="space-y-3">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button onclick="selectIndustry('通訊與光電', '光通訊與CPO')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-purple-300 py-1.5 rounded text-xs md:text-sm text-gray-700">光通訊與CPO</button>
+                                    <button onclick="selectIndustry('通訊與光電', '網通設備')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-purple-300 py-1.5 rounded text-xs md:text-sm text-gray-700">網通設備</button>
+                                    <button onclick="selectIndustry('通訊與光電', '低軌衛星')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-purple-300 py-1.5 rounded text-xs md:text-sm text-gray-700">低軌衛星</button>
+                                    <button onclick="selectIndustry('通訊與光電', '面板與光學')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-purple-300 py-1.5 rounded text-xs md:text-sm text-gray-700">面板與光學</button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
-                        <h3 class="font-bold text-lg text-gray-800 mb-4 border-b pb-2 flex items-center gap-2">🔌 零組件與網通產業</h3>
-                        
-                        <div class="space-y-4">
-                            <div>
-                                <h4 class="text-sm font-bold text-green-800 mb-2 flex items-center gap-1.5"><span class="w-1.5 h-4 bg-green-500 rounded"></span>PCB 印刷電路板</h4>
-                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                                    <button onclick="selectIndustry('PCB', '全部')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-green-300 py-1.5 rounded text-xs md:text-sm text-gray-700">全板塊</button>
-                                    <button onclick="selectIndustry('PCB', '上游材料')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-green-300 py-1.5 rounded text-xs md:text-sm text-gray-700">上游銅箔/CCL</button>
-                                    <button onclick="selectIndustry('PCB', '中游製造')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-green-300 py-1.5 rounded text-xs md:text-sm text-gray-700">中游硬/軟/載板</button>
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <h4 class="text-sm font-bold text-indigo-800 mb-2 flex items-center gap-1.5"><span class="w-1.5 h-4 bg-indigo-500 rounded"></span>通訊與太空衛星</h4>
+                    <!-- 電子零組件與電腦 -->
+                    <div class="space-y-6">
+                        <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
+                            <h3 class="font-bold text-lg text-green-900 mb-3 border-b pb-2 flex items-center gap-2">
+                                <span class="w-2 h-5 bg-green-500 rounded"></span> 電子零組件
+                            </h3>
+                            <div class="space-y-3">
                                 <div class="grid grid-cols-2 gap-2">
-                                    <button onclick="selectIndustry('通訊與衛星', '網通設備')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-indigo-300 py-1.5 rounded text-xs md:text-sm text-gray-700">網通設備</button>
-                                    <button onclick="selectIndustry('通訊與衛星', '低軌衛星相關')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-indigo-300 py-1.5 rounded text-xs md:text-sm text-gray-700">低軌衛星相關</button>
+                                    <button onclick="selectIndustry('電子零組件', 'PCB上游材料')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-green-300 py-1.5 rounded text-xs md:text-sm text-gray-700">PCB上游材料</button>
+                                    <button onclick="selectIndustry('電子零組件', 'PCB中下游製造')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-green-300 py-1.5 rounded text-xs md:text-sm text-gray-700">PCB製造(軟/硬/載板)</button>
+                                    <button onclick="selectIndustry('電子零組件', '被動元件')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-green-300 py-1.5 rounded text-xs md:text-sm text-gray-700">被動元件</button>
+                                    <button onclick="selectIndustry('電子零組件', '散熱模組')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-green-300 py-1.5 rounded text-xs md:text-sm text-gray-700">散熱模組</button>
+                                    <button onclick="selectIndustry('電子零組件', '連接器與車用')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-green-300 py-1.5 rounded text-xs md:text-sm text-gray-700">連接器與車用</button>
                                 </div>
                             </div>
+                        </div>
 
-                            <div>
-                                <h4 class="text-sm font-bold text-teal-800 mb-2 flex items-center gap-1.5"><span class="w-1.5 h-4 bg-teal-500 rounded"></span>光電與其他電子</h4>
-                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                                    <button onclick="selectIndustry('光電業', '全部')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-teal-300 py-1.5 rounded text-xs md:text-sm text-gray-700">光電面板</button>
-                                    <button onclick="selectIndustry('電子零組件', '被動元件')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-teal-300 py-1.5 rounded text-xs md:text-sm text-gray-700">被動元件</button>
-                                    <button onclick="selectIndustry('其他電子', '全部')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-teal-300 py-1.5 rounded text-xs md:text-sm text-gray-700">其他電子</button>
+                        <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
+                            <h3 class="font-bold text-lg text-orange-900 mb-3 border-b pb-2 flex items-center gap-2">
+                                <span class="w-2 h-5 bg-orange-500 rounded"></span> 電腦及週邊
+                            </h3>
+                            <div class="space-y-3">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button onclick="selectIndustry('電腦及週邊', '伺服器代工')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-orange-300 py-1.5 rounded text-xs md:text-sm text-gray-700">伺服器代工</button>
+                                    <button onclick="selectIndustry('電腦及週邊', '電腦與主機板')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-orange-300 py-1.5 rounded text-xs md:text-sm text-gray-700">電腦與主機板</button>
+                                    <button onclick="selectIndustry('電腦及週邊', '工業電腦')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-orange-300 py-1.5 rounded text-xs md:text-sm text-gray-700">工業電腦(IPC)</button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm lg:col-span-2">
-                        <h3 class="font-bold text-lg text-gray-800 mb-4 border-b pb-2 flex items-center gap-2">🏭 傳統產業與金融</h3>
-                        
-                        <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3">
-                            <button onclick="selectIndustry('金融保險', '全部')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-gray-400 py-2 rounded text-xs md:text-sm text-gray-700 font-bold">金融保險</button>
-                            <button onclick="selectIndustry('航運業', '全部')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-gray-400 py-2 rounded text-xs md:text-sm text-gray-700">航運業</button>
-                            <button onclick="selectIndustry('生技醫療', '全部')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-gray-400 py-2 rounded text-xs md:text-sm text-gray-700">生技醫療</button>
-                            <button onclick="selectIndustry('機電與重電', '全部')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-gray-400 py-2 rounded text-xs md:text-sm text-gray-700">機電與重電</button>
-                            <button onclick="selectIndustry('鋼鐵工業', '全部')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-gray-400 py-2 rounded text-xs md:text-sm text-gray-700">鋼鐵工業</button>
-                            <button onclick="selectIndustry('塑膠工業', '全部')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-gray-400 py-2 rounded text-xs md:text-sm text-gray-700">塑膠工業</button>
-                            <button onclick="selectIndustry('建材營造', '全部')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-gray-400 py-2 rounded text-xs md:text-sm text-gray-700">建材營造</button>
-                            <button onclick="selectIndustry('食品工業', '全部')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-gray-400 py-2 rounded text-xs md:text-sm text-gray-700">食品工業</button>
-                            <button onclick="selectIndustry('綠能環保', '全部')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-gray-400 py-2 rounded text-xs md:text-sm text-gray-700">綠能環保</button>
-                            <button onclick="selectIndustry('居家生活', '全部')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-gray-400 py-2 rounded text-xs md:text-sm text-gray-700">居家與百貨</button>
+                    <!-- 傳產金融與生技綠能 -->
+                    <div class="space-y-6">
+                        <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
+                            <h3 class="font-bold text-lg text-teal-900 mb-3 border-b pb-2 flex items-center gap-2">
+                                <span class="w-2 h-5 bg-teal-500 rounded"></span> 綠能與生技
+                            </h3>
+                            <div class="space-y-3">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button onclick="selectIndustry('綠能與重電', '重電與電網')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-teal-300 py-1.5 rounded text-xs md:text-sm text-gray-700">重電與電網</button>
+                                    <button onclick="selectIndustry('綠能與重電', '太陽能與風能')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-teal-300 py-1.5 rounded text-xs md:text-sm text-gray-700">太陽能與風能</button>
+                                    <button onclick="selectIndustry('生技醫療', '新藥與製藥')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-teal-300 py-1.5 rounded text-xs md:text-sm text-gray-700">新藥與製藥</button>
+                                    <button onclick="selectIndustry('生技醫療', '醫療器材與通路')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-teal-300 py-1.5 rounded text-xs md:text-sm text-gray-700">醫材與通路</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
+                            <h3 class="font-bold text-lg text-gray-800 mb-3 border-b pb-2 flex items-center gap-2">
+                                <span class="w-2 h-5 bg-gray-500 rounded"></span> 傳統產業與金融
+                            </h3>
+                            <div class="space-y-3">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button onclick="selectIndustry('傳統與金融', '航運業')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-gray-400 py-1.5 rounded text-xs md:text-sm text-gray-700">航運業</button>
+                                    <button onclick="selectIndustry('傳統與金融', '鋼鐵塑化')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-gray-400 py-1.5 rounded text-xs md:text-sm text-gray-700">鋼鐵與塑化</button>
+                                    <button onclick="selectIndustry('傳統與金融', '金融保險')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-gray-400 py-1.5 rounded text-xs md:text-sm text-gray-700">金融與保險</button>
+                                    <button onclick="selectIndustry('傳統與金融', '觀光餐飲')" class="industry-btn bg-gray-50 border border-gray-200 hover:border-gray-400 py-1.5 rounded text-xs md:text-sm text-gray-700">觀光與餐飲</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -338,6 +351,7 @@
         </div>
     </div>
 
+    <!-- 進階篩選器 Modal -->
     <div id="filter-modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4">
         <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl flex flex-col max-h-[90vh]">
             <div class="flex justify-between items-center p-4 md:p-6 border-b flex-shrink-0">
@@ -505,73 +519,97 @@
     </div>
 
     <script>
+        // === 全台股詳細產業地圖 ===
         const stockPool = [
-            { id: "2404", name: "漢唐", category: "半導體", subCategory: "廠務與自動化" },
-            { id: "6139", name: "亞翔", category: "半導體", subCategory: "廠務與自動化" },
-            { id: "6196", name: "帆宣", category: "半導體", subCategory: "廠務與自動化" },
-            { id: "3413", name: "京鼎", category: "半導體", subCategory: "廠務與自動化" },
-            { id: "2464", name: "盟立", category: "半導體", subCategory: "廠務與自動化" },
-            { id: "6187", name: "萬潤", category: "半導體", subCategory: "廠務與自動化" },
-            { id: "2330", name: "台積電", category: "半導體", subCategory: "晶圓代工與製造" },
-            { id: "2303", name: "聯電", category: "半導體", subCategory: "晶圓代工與製造" },
-            { id: "3680", name: "家登", category: "半導體", subCategory: "前段製造與耗材" },
-            { id: "2338", name: "光罩", category: "半導體", subCategory: "前段製造與耗材" },
-            { id: "5434", name: "崇越", category: "半導體", subCategory: "前段製造與耗材" },
-            { id: "3010", name: "華立", category: "半導體", subCategory: "前段製造與耗材" },
-            { id: "3711", name: "日月光", category: "半導體", subCategory: "後段封測與設備" },
-            { id: "3583", name: "辛耘", category: "半導體", subCategory: "後段封測與設備" },
-            { id: "3131", name: "弘塑", category: "半導體", subCategory: "後段封測與設備" },
-            { id: "2360", name: "致茂", category: "半導體", subCategory: "後段封測與設備" },
-            { id: "2351", name: "順德", category: "半導體", subCategory: "後段封測與設備" },
-            { id: "6548", name: "長科*", category: "半導體", subCategory: "後段封測與設備" },
+            // 半導體
             { id: "2454", name: "聯發科", category: "半導體", subCategory: "IC設計" },
             { id: "3661", name: "世芯-KY", category: "半導體", subCategory: "IC設計" },
             { id: "3443", name: "創意", category: "半導體", subCategory: "IC設計" },
             { id: "3035", name: "智原", category: "半導體", subCategory: "IC設計" },
-            
-            { id: "2383", name: "台光電", category: "PCB", subCategory: "上游材料" },
-            { id: "6213", name: "聯茂", category: "PCB", subCategory: "上游材料" },
-            { id: "6274", name: "台燿", category: "PCB", subCategory: "上游材料" },
-            { id: "8358", name: "金居", category: "PCB", subCategory: "上游材料" },
-            { id: "1815", name: "富喬", category: "PCB", subCategory: "上游材料" },
-            { id: "3037", name: "欣興", category: "PCB", subCategory: "中游製造" },
-            { id: "8046", name: "南電", category: "PCB", subCategory: "中游製造" },
-            { id: "3189", name: "景碩", category: "PCB", subCategory: "中游製造" },
-            { id: "2368", name: "華通", category: "PCB", subCategory: "中游製造" },
-            { id: "3044", name: "健鼎", category: "PCB", subCategory: "中游製造" },
-            { id: "4958", name: "臻鼎-KY", category: "PCB", subCategory: "中游製造" },
-            { id: "2317", name: "鴻海", category: "PCB", subCategory: "下游組裝與應用" },
-            { id: "2382", name: "廣達", category: "PCB", subCategory: "下游組裝與應用" },
-            { id: "3231", name: "緯創", category: "PCB", subCategory: "下游組裝與應用" },
-            { id: "2376", name: "技嘉", category: "PCB", subCategory: "下游組裝與應用" },
+            { id: "2330", name: "台積電", category: "半導體", subCategory: "晶圓代工" },
+            { id: "2303", name: "聯電", category: "半導體", subCategory: "晶圓代工" },
+            { id: "5347", name: "世界", category: "半導體", subCategory: "晶圓代工" },
+            { id: "3711", name: "日月光", category: "半導體", subCategory: "封測與設備" },
+            { id: "3583", name: "辛耘", category: "半導體", subCategory: "封測與設備" },
+            { id: "3131", name: "弘塑", category: "半導體", subCategory: "封測與設備" },
+            { id: "2360", name: "致茂", category: "半導體", subCategory: "封測與設備" },
+            { id: "3680", name: "家登", category: "半導體", subCategory: "設備與材料" },
+            { id: "2338", name: "光罩", category: "半導體", subCategory: "設備與材料" },
+            { id: "5434", name: "崇越", category: "半導體", subCategory: "設備與材料" },
+            { id: "3010", name: "華立", category: "半導體", subCategory: "設備與材料" },
+            { id: "2404", name: "漢唐", category: "半導體", subCategory: "廠務與自動化" },
+            { id: "6139", name: "亞翔", category: "半導體", subCategory: "廠務與自動化" },
+            { id: "6196", name: "帆宣", category: "半導體", subCategory: "廠務與自動化" },
+            { id: "3413", name: "京鼎", category: "半導體", subCategory: "廠務與自動化" },
 
-            { id: "3450", name: "聯鈞", category: "光通訊與CPO", subCategory: "CPO相關" },
-            { id: "6451", name: "訊芯-KY", category: "光通訊與CPO", subCategory: "CPO相關" },
-            { id: "3362", name: "先進光", category: "光通訊與CPO", subCategory: "CPO相關" },
-            { id: "3163", name: "波若威", category: "光通訊與CPO", subCategory: "光通訊相關" },
-            { id: "4979", name: "華星光", category: "光通訊與CPO", subCategory: "光通訊相關" },
-            { id: "4977", name: "眾達-KY", category: "光通訊與CPO", subCategory: "光通訊相關" },
-
-            { id: "3491", name: "昇達科", category: "通訊與衛星", subCategory: "低軌衛星相關" },
-            { id: "6285", name: "啟碁", category: "通訊與衛星", subCategory: "低軌衛星相關" },
-            { id: "5071", name: "鐿鈦", category: "通訊與衛星", subCategory: "低軌衛星相關" },
-            { id: "2314", name: "台揚", category: "通訊與衛星", subCategory: "低軌衛星相關" },
-            { id: "3596", name: "智易", category: "通訊與衛星", subCategory: "網通設備" },
-
-            { id: "3231", name: "緯創", category: "電腦與伺服器", subCategory: "伺服器代工" },
-            { id: "6669", name: "緯穎", category: "電腦與伺服器", subCategory: "伺服器代工" },
-            { id: "3017", name: "奇鋐", category: "電腦與伺服器", subCategory: "散熱模組" },
-            { id: "3324", name: "雙鴻", category: "電腦與伺服器", subCategory: "散熱模組" },
-            { id: "3653", name: "健策", category: "電腦與伺服器", subCategory: "CPU相關" },
-            { id: "3533", name: "嘉澤", category: "電腦與伺服器", subCategory: "CPU相關" },
-            { id: "3515", name: "華擎", category: "電腦與伺服器", subCategory: "CPU相關" },
-
-            { id: "2308", name: "台達電", category: "電子零組件", subCategory: "全部" },
+            // 電子零組件
+            { id: "2383", name: "台光電", category: "電子零組件", subCategory: "PCB上游材料" },
+            { id: "6213", name: "聯茂", category: "電子零組件", subCategory: "PCB上游材料" },
+            { id: "6274", name: "台燿", category: "電子零組件", subCategory: "PCB上游材料" },
+            { id: "8358", name: "金居", category: "電子零組件", subCategory: "PCB上游材料" },
+            { id: "3037", name: "欣興", category: "電子零組件", subCategory: "PCB中下游製造" },
+            { id: "8046", name: "南電", category: "電子零組件", subCategory: "PCB中下游製造" },
+            { id: "3189", name: "景碩", category: "電子零組件", subCategory: "PCB中下游製造" },
+            { id: "2368", name: "華通", category: "電子零組件", subCategory: "PCB中下游製造" },
             { id: "2327", name: "國巨", category: "電子零組件", subCategory: "被動元件" },
-            { id: "2409", name: "友達", category: "光電業", subCategory: "全部" },
-            { id: "2603", name: "長榮", category: "航運業", subCategory: "全部" },
-            { id: "2881", name: "富邦金", category: "金融保險", subCategory: "全部" },
-            { id: "1519", name: "華城", category: "機電與重電", subCategory: "全部" }
+            { id: "2492", name: "華新科", category: "電子零組件", subCategory: "被動元件" },
+            { id: "3017", name: "奇鋐", category: "電子零組件", subCategory: "散熱模組" },
+            { id: "3324", name: "雙鴻", category: "電子零組件", subCategory: "散熱模組" },
+            { id: "3653", name: "健策", category: "電子零組件", subCategory: "散熱模組" },
+            { id: "3665", name: "貿聯-KY", category: "電子零組件", subCategory: "連接器與車用" },
+            { id: "6217", name: "胡連", category: "電子零組件", subCategory: "連接器與車用" },
+
+            // 電腦及週邊
+            { id: "3231", name: "緯創", category: "電腦及週邊", subCategory: "伺服器代工" },
+            { id: "6669", name: "緯穎", category: "電腦及週邊", subCategory: "伺服器代工" },
+            { id: "2382", name: "廣達", category: "電腦及週邊", subCategory: "伺服器代工" },
+            { id: "2317", name: "鴻海", category: "電腦及週邊", subCategory: "伺服器代工" },
+            { id: "2376", name: "技嘉", category: "電腦及週邊", subCategory: "電腦與主機板" },
+            { id: "2357", name: "華碩", category: "電腦及週邊", subCategory: "電腦與主機板" },
+            { id: "3515", name: "華擎", category: "電腦及週邊", subCategory: "電腦與主機板" },
+            { id: "2365", name: "研華", category: "電腦及週邊", subCategory: "工業電腦" },
+            { id: "6414", name: "樺漢", category: "電腦及週邊", subCategory: "工業電腦" },
+
+            // 通訊與光電
+            { id: "3450", name: "聯鈞", category: "通訊與光電", subCategory: "光通訊與CPO" },
+            { id: "6451", name: "訊芯-KY", category: "通訊與光電", subCategory: "光通訊與CPO" },
+            { id: "4979", name: "華星光", category: "通訊與光電", subCategory: "光通訊與CPO" },
+            { id: "4977", name: "眾達-KY", category: "通訊與光電", subCategory: "光通訊與CPO" },
+            { id: "3596", name: "智易", category: "通訊與光電", subCategory: "網通設備" },
+            { id: "5388", name: "中磊", category: "通訊與光電", subCategory: "網通設備" },
+            { id: "3491", name: "昇達科", category: "通訊與光電", subCategory: "低軌衛星" },
+            { id: "6285", name: "啟碁", category: "通訊與光電", subCategory: "低軌衛星" },
+            { id: "2314", name: "台揚", category: "通訊與光電", subCategory: "低軌衛星" },
+            { id: "2409", name: "友達", category: "通訊與光電", subCategory: "面板與光學" },
+            { id: "3481", name: "群創", category: "通訊與光電", subCategory: "面板與光學" },
+            { id: "3008", name: "大立光", category: "通訊與光電", subCategory: "面板與光學" },
+
+            // 綠能與重電
+            { id: "1519", name: "華城", category: "綠能與重電", subCategory: "重電與電網" },
+            { id: "1514", name: "亞力", category: "綠能與重電", subCategory: "重電與電網" },
+            { id: "1503", name: "士電", category: "綠能與重電", subCategory: "重電與電網" },
+            { id: "2308", name: "台達電", category: "綠能與重電", subCategory: "重電與電網" },
+            { id: "6806", name: "森崴能源", category: "綠能與重電", subCategory: "太陽能與風能" },
+            { id: "3708", name: "上緯投控", category: "綠能與重電", subCategory: "太陽能與風能" },
+
+            // 生技醫療
+            { id: "1795", name: "美時", category: "生技醫療", subCategory: "新藥與製藥" },
+            { id: "6472", name: "保瑞", category: "生技醫療", subCategory: "新藥與製藥" },
+            { id: "4743", name: "合一", category: "生技醫療", subCategory: "新藥與製藥" },
+            { id: "3218", name: "大學光", category: "生技醫療", subCategory: "醫療器材與通路" },
+            { id: "4114", name: "健喬", category: "生技醫療", subCategory: "醫療器材與通路" },
+
+            // 傳統與金融
+            { id: "2603", name: "長榮", category: "傳統與金融", subCategory: "航運業" },
+            { id: "2609", name: "陽明", category: "傳統與金融", subCategory: "航運業" },
+            { id: "2615", name: "萬海", category: "傳統與金融", subCategory: "航運業" },
+            { id: "2002", name: "中鋼", category: "傳統與金融", subCategory: "鋼鐵塑化" },
+            { id: "1301", name: "台塑", category: "傳統與金融", subCategory: "鋼鐵塑化" },
+            { id: "2881", name: "富邦金", category: "傳統與金融", subCategory: "金融保險" },
+            { id: "2882", name: "國泰金", category: "傳統與金融", subCategory: "金融保險" },
+            { id: "2891", name: "中信金", category: "傳統與金融", subCategory: "金融保險" },
+            { id: "2727", name: "雄獅", category: "傳統與金融", subCategory: "觀光餐飲" },
+            { id: "2707", name: "晶華", category: "傳統與金融", subCategory: "觀光餐飲" }
         ];
 
         let stocksData = [];
