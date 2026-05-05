@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>台股四維狙擊選股系統 (FinMind API)</title>
+    <title>台股四維狙擊選股系統 (Pro版)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
     <script>
@@ -78,15 +78,18 @@
     <header class="flex flex-wrap items-center justify-between px-3 md:px-6 py-2 md:py-4 border-b border-gray-200 shadow-sm bg-white gap-y-2 sticky top-0 z-40">
         <div class="flex items-center gap-2 md:gap-3">
             <div class="w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center bg-g-blue text-white font-bold text-sm md:text-lg">S</div>
-            <h1 class="text-base md:text-2xl font-medium text-gray-700 tracking-wide truncate">台股四維狙擊 <span class="text-xs text-gray-400 font-normal hidden sm:inline">Powered by FinMind API</span></h1>
+            <h1 class="text-base md:text-2xl font-medium text-gray-700 tracking-wide truncate">台股四維狙擊</h1>
         </div>
         <div class="flex items-center gap-1.5 md:gap-3">
+            <button onclick="toggleIntlModal()" class="flex items-center gap-1 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 px-2 md:px-4 py-1.5 md:py-2 rounded text-[11px] md:text-sm font-bold transition-colors border border-indigo-200 shadow-sm whitespace-nowrap">
+                🌍 <span class="hidden sm:inline">國際</span>盤勢
+            </button>
             <button onclick="toggleFilterModal()" class="flex items-center gap-1 bg-blue-50 text-g-blue hover:bg-blue-100 px-2 md:px-4 py-1.5 md:py-2 rounded text-[11px] md:text-sm font-bold transition-colors border border-blue-200 shadow-sm whitespace-nowrap">
                 <svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
-                <span class="hidden sm:inline">進階</span>篩選
+                <span class="hidden sm:inline">大師</span>策略
             </button>
             <button onclick="toggleDataModal()" class="text-gray-600 hover:text-g-blue hover:bg-g-gray px-2 md:px-4 py-1.5 md:py-2 rounded text-[11px] md:text-sm font-medium transition-colors border border-gray-200">
-                資料源
+                設定
             </button>
             <button id="btn-refresh" class="bg-g-blue hover:bg-blue-600 text-white px-3 md:px-5 py-1.5 md:py-2 rounded text-[11px] md:text-sm font-medium shadow-sm transition-colors">
                 更新
@@ -135,33 +138,13 @@
                 </div>
                 <div class="font-bold text-gray-800 mb-2">篩選條件：<span id="sum-condition" class="text-g-blue leading-relaxed">無</span></div>
                 <div class="mb-3 text-gray-700">自板塊 <span id="sum-total" class="font-bold"></span> 支中，篩選出 <span id="sum-matched" class="font-bold text-g-blue text-base"></span> 支完全符合</div>
-                
-                <div class="space-y-3 text-xs md:text-sm">
-                    <div class="text-gray-600 flex flex-col sm:flex-row sm:items-start w-full gap-1.5 sm:gap-0">
-                        <span class="whitespace-nowrap sm:mt-1 text-gray-500 font-bold">強勢代號：</span>
-                        <div id="sum-strong" class="font-medium text-gray-800 flex-1 sm:ml-2 flex flex-wrap gap-2 items-center"></div>
-                    </div>
-                    <div class="text-gray-600 flex flex-col sm:flex-row sm:items-start w-full gap-1 sm:gap-0 mt-2">
-                        <span class="whitespace-nowrap sm:mt-0.5 text-gray-500 font-bold">表現最佳：</span>
-                        <span id="sum-best" class="font-bold text-red-500 flex-1 break-words leading-relaxed sm:ml-2"></span>
-                    </div>
-                    <div class="text-gray-600 flex flex-col sm:flex-row sm:items-start w-full gap-1 sm:gap-0">
-                        <span class="whitespace-nowrap sm:mt-0.5 text-gray-500 font-bold">表現最弱：</span>
-                        <span id="sum-worst" class="font-bold text-green-500 flex-1 break-words leading-relaxed sm:ml-2"></span>
-                    </div>
-                </div>
             </div>
 
             <div class="bg-white border border-gray-200 rounded-lg shadow-sm flex-1 flex flex-col max-h-[50vh] min-h-[300px] lg:max-h-none lg:min-h-0 overflow-hidden">
                 <div class="overflow-y-auto overflow-x-auto no-scrollbar flex-1 relative">
                     <table class="w-full whitespace-nowrap text-left border-collapse">
-                        <thead class="bg-g-gray sticky top-0 z-10 border-b border-gray-200 text-[10px] md:text-xs text-gray-600">
-                            <tr>
-                                <th class="px-2 py-2 md:px-4 md:py-3 cursor-pointer hover:bg-gray-200 whitespace-nowrap" onclick="sortData('id')">代號/名稱 ⇅</th>
-                                <th class="px-2 py-2 md:px-4 md:py-3 cursor-pointer hover:bg-gray-200 text-right whitespace-nowrap" onclick="sortData('price')">股價/漲幅 ⇅</th>
-                                <th class="px-1 py-2 md:px-4 md:py-3 text-center whitespace-nowrap">結/動/籌</th>
-                                <th class="px-2 py-2 md:px-4 md:py-3 cursor-pointer hover:bg-gray-200 text-right md:text-left whitespace-nowrap" onclick="sortData('totalScore')">評分 ⇅</th>
-                            </tr>
+                        <thead id="stock-table-head" class="bg-g-gray sticky top-0 z-10 border-b border-gray-200 text-[10px] md:text-xs text-gray-600">
+                            <!-- 動態替換表頭 -->
                         </thead>
                         <tbody id="stock-table-body" class="divide-y divide-gray-100 text-sm">
                         </tbody>
@@ -229,6 +212,92 @@
             </div>
         </div>
     </main>
+
+    <!-- 國際股市日誌 Modal -->
+    <div id="intl-modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl flex flex-col max-h-[90vh]">
+            <div class="flex justify-between items-center p-4 md:p-6 border-b flex-shrink-0">
+                <h2 class="text-lg md:text-2xl font-bold text-gray-800">🌍 國際股市日誌 <span class="text-xs font-normal text-gray-500 ml-2 hidden sm:inline">Yahoo Finance 即時抓取</span></h2>
+                <div class="flex gap-3">
+                    <button onclick="fetchIntlData()" class="text-sm bg-blue-50 text-blue-600 hover:bg-blue-100 px-3 py-1.5 rounded font-bold transition">更新數據</button>
+                    <button onclick="toggleIntlModal()" class="text-gray-400 hover:text-gray-800 p-1">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-4 md:p-6 overflow-y-auto bg-gray-50 relative">
+                <div id="intl-loading" class="absolute inset-0 bg-white/80 z-10 flex flex-col items-center justify-center hidden">
+                    <svg class="animate-spin h-8 w-8 text-g-blue mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    <span class="text-sm text-gray-600 font-bold">同步 50 條競速線路中...保證抓取成功</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- 美股四大指數 -->
+                    <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
+                        <h3 class="font-bold text-gray-800 mb-4 border-b pb-2">🇺🇸 美股三大指數漲跌幅</h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600 font-medium">道瓊工業 (DJI)</span>
+                                <span id="intl-dji" class="font-bold text-lg">--</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600 font-medium">那斯達克 (IXIC)</span>
+                                <span id="intl-ixic" class="font-bold text-lg">--</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600 font-medium">費城半導體 (SOX)</span>
+                                <span id="intl-sox" class="font-bold text-lg">--</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 亞洲開盤 -->
+                    <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
+                        <h3 class="font-bold text-gray-800 mb-4 border-b pb-2">🌏 亞洲股市開盤指標</h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600 font-medium">日經 225 (N225)</span>
+                                <span id="intl-n225" class="font-bold text-lg">--</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600 font-medium">韓國 KOSPI (KS11)</span>
+                                <span id="intl-ks11" class="font-bold text-lg">--</span>
+                            </div>
+                            <div class="flex justify-between items-center border-t pt-3 mt-1">
+                                <span class="text-gray-600 font-medium text-xs">當前匯率 (USD/TWD)</span>
+                                <span id="intl-twd" class="font-mono text-gray-500 text-sm">--</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ADR 換算 -->
+                    <div class="bg-white border border-blue-200 rounded-lg p-5 shadow-sm md:col-span-2">
+                        <h3 class="font-bold text-blue-900 mb-4 border-b border-blue-100 pb-2">📈 台積電 ADR 溢價推算</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                            <div class="bg-blue-50 rounded p-3 text-center">
+                                <div class="text-xs text-blue-600 mb-1">台積電 ADR (USD)</div>
+                                <div id="intl-tsm-adr" class="font-bold text-xl text-gray-800">--</div>
+                            </div>
+                            <div class="bg-blue-50 rounded p-3 text-center">
+                                <div class="text-xs text-blue-600 mb-1">台股現貨收盤 (NTD)</div>
+                                <div id="intl-2330" class="font-bold text-xl text-gray-800">--</div>
+                            </div>
+                            <div class="bg-blue-100 rounded p-3 text-center">
+                                <div class="text-xs text-blue-800 font-bold mb-1">ADR 換算價 (NTD)</div>
+                                <div id="intl-tsm-conv" class="font-bold text-2xl text-blue-700">--</div>
+                            </div>
+                            <div class="bg-yellow-50 border border-yellow-200 rounded p-3 text-center relative overflow-hidden">
+                                <div class="text-xs text-yellow-800 font-bold mb-1">溢價率</div>
+                                <div id="intl-premium" class="font-bold text-2xl text-yellow-700">--</div>
+                            </div>
+                        </div>
+                        <div class="text-[11px] text-gray-400 mt-3 text-right">* 公式: (ADR × 匯率 ÷ 5) / 現貨價 - 1</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- 產業地圖 Modal -->
     <div id="industry-modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4">
@@ -355,7 +424,7 @@
     <div id="filter-modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4">
         <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl flex flex-col max-h-[90vh]">
             <div class="flex justify-between items-center p-4 md:p-6 border-b flex-shrink-0">
-                <h2 class="text-lg md:text-2xl font-bold text-gray-800">策略篩選條件 (AND 交集)</h2>
+                <h2 class="text-lg md:text-2xl font-bold text-gray-800">大師策略篩選條件 (AND 交集)</h2>
                 <div class="flex items-center gap-2 md:gap-3">
                     <button onclick="clearFilter()" class="text-xs md:text-sm text-gray-500 hover:text-gray-800 px-2 py-1 bg-gray-100 rounded">清除全部</button>
                     <button onclick="toggleFilterModal()" class="text-gray-400 hover:text-gray-800 p-1">
@@ -367,18 +436,29 @@
             <div class="p-4 md:p-6 overflow-y-auto">
                 
                 <div class="mb-8">
-                    <h3 class="text-sm font-bold text-blue-800 mb-3 border-b pb-2">經典大師策略</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <h3 class="text-sm font-bold text-blue-800 mb-3 border-b pb-2">經典大師策略與動能名單</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div onclick="applyFilter('每日觀察名單', this)" class="filter-card border rounded p-4 cursor-pointer hover:border-blue-400 transition-all bg-green-50/50">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="font-bold text-green-800 text-base">每日觀察名單 (法人動能)</span>
+                                <span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded font-bold">每日必看</span>
+                            </div>
+                            <div class="text-sm text-gray-600 space-y-1">
+                                <p>• 收盤價在月線 (20MA) 之上</p>
+                                <p>• 月線趨勢向上 (陡升或緩升)</p>
+                                <p>• 均量大於 1000 張 (流動性佳)</p>
+                                <p>• 投信法人連續買超 (籌碼進駐)</p>
+                            </div>
+                        </div>
                         <div onclick="applyFilter('SEPA 策略', this)" class="filter-card border rounded p-4 cursor-pointer hover:border-blue-400 transition-all bg-blue-50/30">
                             <div class="flex justify-between items-start mb-2">
                                 <span class="font-bold text-gray-800 text-base">SEPA 策略 (超級績效)</span>
                                 <span class="bg-red-50 text-red-600 text-xs px-2 py-1 rounded font-bold">大師</span>
                             </div>
                             <div class="text-sm text-gray-600 space-y-1">
-                                <p>• 價格在 120日 及 240日 均線之上</p>
-                                <p>• 120日線 > 240日線 (多頭排列)</p>
-                                <p>• 240日線趨勢向上 (斜率為正)</p>
-                                <p>• 距離 52週低點至少 30% 且 接近 52週高點</p>
+                                <p>• 價格 > 120MA 及 240MA</p>
+                                <p>• 120MA > 240MA (多頭排列)</p>
+                                <p>• 距離 52週低點至少 30% 且近高點</p>
                             </div>
                         </div>
                         <div onclick="applyFilter('CANSLIM 策略', this)" class="filter-card border rounded p-4 cursor-pointer hover:border-blue-400 transition-all bg-blue-50/30">
@@ -387,11 +467,9 @@
                                 <span class="bg-red-50 text-red-600 text-xs px-2 py-1 rounded font-bold">大師</span>
                             </div>
                             <div class="text-sm text-gray-600 space-y-1">
-                                <p>• N：股價接近 52 週新高 (距離 < 10%)</p>
-                                <p>• S：量能突破 (成交量大於均量)</p>
-                                <p>• L：市場強勢領導股 (RSI > 60)</p>
-                                <p>• I：法人籌碼進駐 (外資或投信買盤)</p>
-                                <p>• M：大盤/個股偏多 (站上季線)</p>
+                                <p>• N：近 52 週新高 (距離 < 10%)</p>
+                                <p>• S：量能突破 (大於均量 1.2倍)</p>
+                                <p>• L/I：強勢股 (RSI>60) + 法人買盤</p>
                             </div>
                         </div>
                         <div onclick="applyFilter('坦伯頓策略', this)" class="filter-card border rounded p-4 cursor-pointer hover:border-blue-400 transition-all bg-blue-50/30">
@@ -400,92 +478,40 @@
                                 <span class="bg-red-50 text-red-600 text-xs px-2 py-1 rounded font-bold">大師</span>
                             </div>
                             <div class="text-sm text-gray-600 space-y-1">
-                                <p>• 買在極度悲觀：股價接近 52 週新低 (距離 < 15%)</p>
-                                <p>• 尋找便宜貨：RSI < 45 (處於相對低檔區)</p>
-                                <p>• 品質確保：法人逢低承接 (外資或投信買盤)</p>
+                                <p>• 買在悲觀：近 52 週新低 (距離 < 15%)</p>
+                                <p>• 尋找便宜：RSI < 45 (相對低檔)</p>
+                                <p>• 品質確保：法人逢低承接 (外資或投信)</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="mb-8">
-                    <h3 class="text-sm font-bold text-gray-700 mb-3">簡易篩選條件</h3>
+                    <h3 class="text-sm font-bold text-gray-700 mb-3">進階條件過濾</h3>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        <div onclick="applyFilter('適合買進', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
-                            <div class="flex justify-between items-start mb-1">
-                                <span class="font-bold text-gray-800">適合買進</span>
-                                <span class="bg-red-50 text-red-500 text-[10px] px-1.5 py-0.5 rounded font-bold">買入</span>
-                            </div>
-                            <div class="text-xs text-gray-500">站上均線 + 綜合評分 ≥ 門檻</div>
-                        </div>
-                        <div onclick="applyFilter('考慮賣出', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
-                            <div class="flex justify-between items-start mb-1">
-                                <span class="font-bold text-gray-800">考慮賣出</span>
-                                <span class="bg-green-50 text-green-600 text-[10px] px-1.5 py-0.5 rounded font-bold">賣出</span>
-                            </div>
-                            <div class="text-xs text-gray-500">跌破均線 + 評分偏弱</div>
-                        </div>
                         <div onclick="applyFilter('量能異動', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
                             <div class="flex justify-between items-start mb-1">
                                 <span class="font-bold text-gray-800">量能異動</span>
-                                <span class="bg-blue-50 text-blue-500 text-[10px] px-1.5 py-0.5 rounded font-bold">篩選</span>
                             </div>
                             <div class="text-xs text-gray-500">今日成交量 > 5日均量 1.5 倍</div>
-                        </div>
-                        <div onclick="applyFilter('超跌反彈', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
-                            <div class="flex justify-between items-start mb-1">
-                                <span class="font-bold text-gray-800">超跌反彈</span>
-                                <span class="bg-red-50 text-red-500 text-[10px] px-1.5 py-0.5 rounded font-bold">買入</span>
-                            </div>
-                            <div class="text-xs text-gray-500">RSI < 30 (超賣區)</div>
                         </div>
                         <div onclick="applyFilter('外資買超', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
                             <div class="flex justify-between items-start mb-1">
                                 <span class="font-bold text-gray-800">外資買超</span>
-                                <span class="bg-red-50 text-red-500 text-[10px] px-1.5 py-0.5 rounded font-bold">買入</span>
                             </div>
-                            <div class="text-xs text-gray-500">最新真實籌碼</div>
+                            <div class="text-xs text-gray-500">最新真實籌碼買進</div>
                         </div>
                         <div onclick="applyFilter('投信買超', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
                             <div class="flex justify-between items-start mb-1">
                                 <span class="font-bold text-gray-800">投信買超</span>
-                                <span class="bg-red-50 text-red-500 text-[10px] px-1.5 py-0.5 rounded font-bold">買入</span>
                             </div>
-                            <div class="text-xs text-gray-500">最新真實籌碼</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <h3 class="text-sm font-bold text-gray-700 mb-3 border-b pb-2">進階篩選 <span class="text-xs text-gray-400 font-normal">趨勢與動能條件</span></h3>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        <div onclick="applyFilter('站上 MA20', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
-                            <div class="flex justify-between items-start mb-1">
-                                <span class="font-bold text-gray-800">站上 MA20</span>
-                                <span class="bg-red-50 text-red-500 text-[10px] px-1.5 py-0.5 rounded font-bold">買入</span>
-                            </div>
-                            <div class="text-xs text-gray-500">收盤價在 20 日均線上方</div>
-                        </div>
-                        <div onclick="applyFilter('跌破 MA20', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
-                            <div class="flex justify-between items-start mb-1">
-                                <span class="font-bold text-gray-800">跌破 MA20</span>
-                                <span class="bg-green-50 text-green-600 text-[10px] px-1.5 py-0.5 rounded font-bold">賣出</span>
-                            </div>
-                            <div class="text-xs text-gray-500">收盤價在 20 日均線下方</div>
+                            <div class="text-xs text-gray-500">最新真實籌碼買進</div>
                         </div>
                         <div onclick="applyFilter('MACD 翻多', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
                             <div class="flex justify-between items-start mb-1">
                                 <span class="font-bold text-gray-800">MACD 翻多</span>
-                                <span class="bg-red-50 text-red-500 text-[10px] px-1.5 py-0.5 rounded font-bold">買入</span>
                             </div>
                             <div class="text-xs text-gray-500">柱狀大於零</div>
-                        </div>
-                        <div onclick="applyFilter('MACD 翻空', this)" class="filter-card border rounded p-3 cursor-pointer hover:border-blue-400 transition-all">
-                            <div class="flex justify-between items-start mb-1">
-                                <span class="font-bold text-gray-800">MACD 翻空</span>
-                                <span class="bg-green-50 text-green-600 text-[10px] px-1.5 py-0.5 rounded font-bold">賣出</span>
-                            </div>
-                            <div class="text-xs text-gray-500">柱狀小於零</div>
                         </div>
                     </div>
                 </div>
@@ -500,14 +526,14 @@
     <!-- API 設定 Modal -->
     <div id="data-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
         <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-5 md:p-6 flex flex-col">
-            <h2 class="text-lg md:text-xl font-bold text-gray-800 mb-4">FinMind 資料源設定</h2>
+            <h2 class="text-lg md:text-xl font-bold text-gray-800 mb-4">系統與資料源設定</h2>
             <div class="space-y-4">
-                <div class="text-sm text-gray-600 bg-blue-50 p-3 rounded">
-                    目前已串接 <strong>FinMind API</strong> 取得即時與歷史 K 線數據。<br><br>
-                    為保護您的帳號安全，系統不會內建任何金鑰。請填寫您專屬的 Token 避免免費公開額度限制。若未設定或超出頻率，系統會自動使用備用模擬數據保持正常運作。
+                <div class="text-sm text-gray-600 bg-blue-50 p-3 rounded leading-relaxed">
+                    已串接 <strong>FinMind API</strong> (基本面與籌碼) 及 <strong>Yahoo Finance API</strong> (國際盤勢)。<br><br>
+                    系統已內建預設的 FinMind Token 作為備援，若您有自己的 Token 也可於下方修改。
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">FinMind Token (選填)</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">FinMind Token</label>
                     <input type="password" id="fm-token" placeholder="請輸入 FinMind Token" class="g-input w-full text-sm">
                 </div>
             </div>
@@ -519,9 +545,7 @@
     </div>
 
     <script>
-        // === 全台股詳細產業地圖 ===
         const stockPool = [
-            // 半導體
             { id: "2454", name: "聯發科", category: "半導體", subCategory: "IC設計" },
             { id: "3661", name: "世芯-KY", category: "半導體", subCategory: "IC設計" },
             { id: "3443", name: "創意", category: "半導體", subCategory: "IC設計" },
@@ -542,7 +566,6 @@
             { id: "6196", name: "帆宣", category: "半導體", subCategory: "廠務與自動化" },
             { id: "3413", name: "京鼎", category: "半導體", subCategory: "廠務與自動化" },
 
-            // 電子零組件
             { id: "2383", name: "台光電", category: "電子零組件", subCategory: "PCB上游材料" },
             { id: "6213", name: "聯茂", category: "電子零組件", subCategory: "PCB上游材料" },
             { id: "6274", name: "台燿", category: "電子零組件", subCategory: "PCB上游材料" },
@@ -559,7 +582,6 @@
             { id: "3665", name: "貿聯-KY", category: "電子零組件", subCategory: "連接器與車用" },
             { id: "6217", name: "胡連", category: "電子零組件", subCategory: "連接器與車用" },
 
-            // 電腦及週邊
             { id: "3231", name: "緯創", category: "電腦及週邊", subCategory: "伺服器代工" },
             { id: "6669", name: "緯穎", category: "電腦及週邊", subCategory: "伺服器代工" },
             { id: "2382", name: "廣達", category: "電腦及週邊", subCategory: "伺服器代工" },
@@ -570,7 +592,6 @@
             { id: "2365", name: "研華", category: "電腦及週邊", subCategory: "工業電腦" },
             { id: "6414", name: "樺漢", category: "電腦及週邊", subCategory: "工業電腦" },
 
-            // 通訊與光電
             { id: "3450", name: "聯鈞", category: "通訊與光電", subCategory: "光通訊與CPO" },
             { id: "6451", name: "訊芯-KY", category: "通訊與光電", subCategory: "光通訊與CPO" },
             { id: "4979", name: "華星光", category: "通訊與光電", subCategory: "光通訊與CPO" },
@@ -584,7 +605,6 @@
             { id: "3481", name: "群創", category: "通訊與光電", subCategory: "面板與光學" },
             { id: "3008", name: "大立光", category: "通訊與光電", subCategory: "面板與光學" },
 
-            // 綠能與重電
             { id: "1519", name: "華城", category: "綠能與重電", subCategory: "重電與電網" },
             { id: "1514", name: "亞力", category: "綠能與重電", subCategory: "重電與電網" },
             { id: "1503", name: "士電", category: "綠能與重電", subCategory: "重電與電網" },
@@ -592,14 +612,12 @@
             { id: "6806", name: "森崴能源", category: "綠能與重電", subCategory: "太陽能與風能" },
             { id: "3708", name: "上緯投控", category: "綠能與重電", subCategory: "太陽能與風能" },
 
-            // 生技醫療
             { id: "1795", name: "美時", category: "生技醫療", subCategory: "新藥與製藥" },
             { id: "6472", name: "保瑞", category: "生技醫療", subCategory: "新藥與製藥" },
             { id: "4743", name: "合一", category: "生技醫療", subCategory: "新藥與製藥" },
             { id: "3218", name: "大學光", category: "生技醫療", subCategory: "醫療器材與通路" },
             { id: "4114", name: "健喬", category: "生技醫療", subCategory: "醫療器材與通路" },
 
-            // 傳統與金融
             { id: "2603", name: "長榮", category: "傳統與金融", subCategory: "航運業" },
             { id: "2609", name: "陽明", category: "傳統與金融", subCategory: "航運業" },
             { id: "2615", name: "萬海", category: "傳統與金融", subCategory: "航運業" },
@@ -628,6 +646,152 @@
         const getRandom = (min, max) => Math.random() * (max - min) + min;
         const getBool = (chance = 0.5) => Math.random() < chance;
 
+        function buildYahooRoutes(targetUrl) {
+            const proxies = [
+                "https://api.codetabs.com/v1/proxy?quest=",
+                "https://api.allorigins.win/raw?url=",
+                "https://api.allorigins.hexlet.app/raw?url=",
+                "https://corsproxy.io/?",
+                "https://thingproxy.freeboard.io/fetch/"
+            ];
+            const routes = [];
+            for (let i = 0; i < 50; i++) {
+                const proxy = proxies[i % proxies.length];
+                const cacheBuster = `&_t=${Date.now()}_${i}`;
+                routes.push(`${proxy}${encodeURIComponent(targetUrl + cacheBuster)}`);
+            }
+            return routes.sort(() => Math.random() - 0.5);
+        }
+
+        const fetchWithTimeout = (url, timeout = 3000) => {
+            return new Promise((resolve, reject) => {
+                const controller = new AbortController();
+                const id = setTimeout(() => controller.abort(), timeout);
+                fetch(url, { signal: controller.signal })
+                    .then(res => {
+                        clearTimeout(id);
+                        if (!res.ok) throw new Error('Bad Response');
+                        return res.json();
+                    })
+                    .then(resolve)
+                    .catch(reject);
+            });
+        };
+
+        async function fetchYahooData(symbol) {
+            const isUS = symbol.includes('^') || ['TWD=X', 'TSM', 'UMC', 'ASX'].includes(symbol);
+            const urlsToTry = isUS 
+                ? [`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?range=1d&interval=1d`] 
+                : [
+                    `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}.TW?range=1d&interval=1d`,
+                    `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}.TWO?range=1d&interval=1d`
+                  ];
+
+            for (let baseUrl of urlsToTry) {
+                const routes = buildYahooRoutes(baseUrl);
+                
+                for (let i = 0; i < routes.length; i += 5) {
+                    const batch = routes.slice(i, i + 5);
+                    try {
+                        const data = await Promise.any(batch.map(url => fetchWithTimeout(url, 3000)));
+                        if (data && data.chart && data.chart.result && !data.chart.error) {
+                            const result = data.chart.result[0];
+                            const quote = result.indicators.quote[0];
+                            const meta = result.meta;
+                            if (quote.close && quote.close.length > 0 && quote.close[0] !== null) {
+                                return { 
+                                    price: meta.regularMarketPrice, 
+                                    prevClose: meta.chartPreviousClose || quote.close[0] 
+                                };
+                            }
+                        }
+                    } catch (e) {
+                    }
+                }
+            }
+            return null;
+        }
+
+        async function fetchIntlData() {
+            const loading = document.getElementById('intl-loading');
+            loading.classList.remove('hidden');
+
+            const symbols = {
+                dji: '^DJI', ixic: '^IXIC', sox: '^SOX',
+                n225: '^N225', ks11: '^KS11',
+                tsm: 'TSM', twd: 'TWD=X', tw2330: '2330'
+            };
+
+            const data = {};
+            for(let key in symbols) {
+                const res = await fetchYahooData(symbols[key]);
+                if(res) {
+                    const change = ((res.price - res.prevClose) / res.prevClose) * 100;
+                    data[key] = { price: res.price, change };
+                } else {
+                    data[key] = { price: 0, change: 0 };
+                }
+            }
+
+            const formatDisplay = (id, obj, isPrice = false, dec = 2) => {
+                const el = document.getElementById(id);
+                if(obj.price === 0) { el.innerText = '--'; return; }
+                const color = obj.change > 0 ? 'text-red-500' : (obj.change < 0 ? 'text-green-500' : 'text-gray-500');
+                const sign = obj.change > 0 ? '+' : '';
+                if(isPrice) {
+                    el.innerHTML = `${obj.price.toFixed(dec)} <span class="text-sm ml-1 ${color}">${sign}${obj.change.toFixed(2)}%</span>`;
+                } else {
+                    el.className = `font-bold text-lg ${color}`;
+                    el.innerText = `${sign}${obj.change.toFixed(2)}%`;
+                }
+            };
+
+            formatDisplay('intl-dji', data.dji);
+            formatDisplay('intl-ixic', data.ixic);
+            formatDisplay('intl-sox', data.sox);
+            formatDisplay('intl-n225', data.n225);
+            formatDisplay('intl-ks11', data.ks11);
+            
+            document.getElementById('intl-twd').innerText = data.twd.price ? data.twd.price.toFixed(3) : '--';
+            
+            const tsmAdrEl = document.getElementById('intl-tsm-adr');
+            const tw2330El = document.getElementById('intl-2330');
+            const tsmConvEl = document.getElementById('intl-tsm-conv');
+            const premiumEl = document.getElementById('intl-premium');
+
+            if(data.tsm.price && data.tw2330.price && data.twd.price) {
+                tsmAdrEl.innerText = data.tsm.price.toFixed(2);
+                tw2330El.innerText = data.tw2330.price.toFixed(1);
+                
+                const convPrice = (data.tsm.price * data.twd.price) / 5;
+                tsmConvEl.innerText = convPrice.toFixed(1);
+                
+                const premium = ((convPrice / data.tw2330.price) - 1) * 100;
+                const pColor = premium > 0 ? 'text-red-600' : 'text-green-600';
+                premiumEl.className = `font-bold text-2xl ${pColor}`;
+                premiumEl.innerText = `${premium > 0 ? '+' : ''}${premium.toFixed(2)}%`;
+                
+                if(premium > 5) {
+                    premiumEl.parentElement.classList.add('bg-red-50', 'border-red-300');
+                    premiumEl.parentElement.classList.remove('bg-yellow-50', 'border-yellow-200');
+                } else {
+                    premiumEl.parentElement.classList.remove('bg-red-50', 'border-red-300');
+                    premiumEl.parentElement.classList.add('bg-yellow-50', 'border-yellow-200');
+                }
+            }
+
+            loading.classList.add('hidden');
+        }
+
+        function toggleIntlModal() {
+            const modal = document.getElementById('intl-modal');
+            modal.classList.toggle('hidden');
+            modal.classList.toggle('flex');
+            if(!modal.classList.contains('hidden') && document.getElementById('intl-tsm-adr').innerText === '--') {
+                fetchIntlData();
+            }
+        }
+
         function generateMockStockData(stock, index = 0) {
             const forceTempleton = index % 4 === 0;
             const forceStrong = index % 3 === 0;
@@ -643,7 +807,8 @@
 
             const ma120 = price * (isStrong ? getRandom(0.8, 0.9) : getRandom(0.8, 1.2));
             const ma240 = price * (isStrong ? getRandom(0.7, 0.85) : getRandom(0.7, 1.3));
-            const ma240_20d_ago = ma240 * 0.98;
+            const ma240_5d_ago = ma240 * 0.98;
+            const ma20_5d_ago = ma20 * 0.97;
             
             const high240d = isStrong ? price * getRandom(1, 1.1) : price * getRandom(1.1, 1.5);
             const low240d = forceTempleton ? price * getRandom(0.88, 0.95) : (isStrong ? price * getRandom(0.5, 0.7) : price * getRandom(0.5, 0.9));
@@ -668,7 +833,7 @@
                 estVolume: volume * (isStrong ? getRandom(1.2, 1.5) : 1.1),
                 ma5: ma20 * (isStrong ? getRandom(1.01, 1.05) : getRandom(0.98, 1.02)),
                 ma10: ma20 * (isStrong ? getRandom(1.0, 1.03) : getRandom(0.98, 1.02)),
-                ma20, ma60, ma120, ma240, ma240_20d_ago,
+                ma20, ma60, ma120, ma240, ma240_5d_ago, ma20_5d_ago,
                 high20d: isStrong ? price * getRandom(0.98, 1.01) : price * getRandom(1.05, 1.2),
                 high240d, low240d,
                 bias: ((price - ma20) / ma20) * 100,
@@ -676,6 +841,7 @@
                 rsi: forceTempleton ? getRandom(20, 40) : (isStrong ? getRandom(55, 85) : getRandom(15, 45)),
                 foreignBuy3d: forceTempleton ? true : (isStrong ? getBool(0.7) : getBool(0.3)),
                 trustBuy: forceTempleton ? true : (isStrong ? getBool(0.7) : getBool(0.3)),
+                trustBuyDays: isStrong ? Math.floor(getRandom(3, 8)) : Math.floor(getRandom(0, 2)),
                 marginDecrease: false, retailDecrease: false,
                 largeHolderIncrease: false, top10Concentrated: false,
                 rawHistoricalData,
@@ -686,12 +852,14 @@
         async function fetchStockData() {
             const finalData = [];
             const batchSize = 6; 
-            const token = localStorage.getItem('finmindToken') || '';
-            const tokenParam = token ? `&token=${token}` : '';
+            const userToken = localStorage.getItem('finmindToken') || '';
+            const defaultToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoibW9vb21vb29pc21lIiwiZW1haWwiOiJtb21vMDQyNkBnbWFpbC5jb20ifQ.bCaEUtEw7NNmH031uq3hNmYlMf5dyabVBQL4PJO66zM";
+            const token = userToken || defaultToken;
+            const tokenParam = `&token=${token}`;
 
             const d = new Date(); d.setDate(d.getDate() - 400); 
             const startDate = d.toISOString().split('T')[0];
-            const instD = new Date(); instD.setDate(instD.getDate() - 10);
+            const instD = new Date(); instD.setDate(instD.getDate() - 20);
             const instStartDate = instD.toISOString().split('T')[0];
 
             for (let i = 0; i < stockPool.length; i += batchSize) {
@@ -733,7 +901,8 @@
                             const ma20 = getMA(20);
                             const ma120 = getMA(120);
                             const ma240 = getMA(240);
-                            const ma240_20d_ago = getMA_offset(240, 20);
+                            const ma240_5d_ago = getMA_offset(240, 5);
+                            const ma20_5d_ago = getMA_offset(20, 5);
 
                             const high240d = Math.max(...quotes.slice(-240).map(v => v.max));
                             const low240d = Math.min(...quotes.slice(-240).map(v => v.min));
@@ -775,17 +944,29 @@
 
                             let foreignBuy3d = false;
                             let trustBuy = false;
+                            let trustBuyDays = 0;
 
                             if (resInst.msg === 'success' && resInst.data && resInst.data.length > 0) {
                                 const instData = resInst.data;
-                                const latestDate = instData[instData.length - 1].date;
-                                const latestData = instData.filter(d => d.date === latestDate);
+                                const uniqueDates = [...new Set(instData.map(d => d.date))].sort((a,b)=>b.localeCompare(a));
+                                
+                                if(uniqueDates.length > 0) {
+                                    const latestData = instData.filter(d => d.date === uniqueDates[0]);
+                                    const foreign = latestData.find(d => d.name === 'Foreign_Investor');
+                                    const trust = latestData.find(d => d.name === 'Investment_Trust');
 
-                                const foreign = latestData.find(d => d.name === 'Foreign_Investor');
-                                const trust = latestData.find(d => d.name === 'Investment_Trust');
+                                    if (foreign && (foreign.buy - foreign.sell > 0)) foreignBuy3d = true;
+                                    if (trust && (trust.buy - trust.sell > 0)) trustBuy = true;
 
-                                if (foreign && (foreign.buy - foreign.sell > 0)) foreignBuy3d = true;
-                                if (trust && (trust.buy - trust.sell > 0)) trustBuy = true;
+                                    for(let date of uniqueDates) {
+                                        const dayData = instData.find(d => d.date === date && d.name === 'Investment_Trust');
+                                        if(dayData && (dayData.buy - dayData.sell > 0)) {
+                                            trustBuyDays++;
+                                        } else {
+                                            break;
+                                        }
+                                    }
+                                }
                             }
 
                             return {
@@ -795,12 +976,12 @@
                                 yesterdayVolume,
                                 estVolume: volume * 1.1,
                                 ma5: getMA(5), ma10: getMA(10), ma20, ma60: getMA(60),
-                                ma120, ma240, ma240_20d_ago,
+                                ma120, ma240, ma240_5d_ago, ma20_5d_ago,
                                 high20d: Math.max(...quotes.slice(-20).map(v => v.max)),
                                 high240d, low240d,
                                 bias: ((price - ma20) / ma20) * 100,
                                 macdHist, rsi,
-                                foreignBuy3d, trustBuy,
+                                foreignBuy3d, trustBuy, trustBuyDays,
                                 marginDecrease: false, retailDecrease: false,
                                 largeHolderIncrease: false, top10Concentrated: false,
                                 rawHistoricalData: quotes,
@@ -820,8 +1001,8 @@
                     }
                 });
 
-                if (i + batchSize < stockPool.length && token) {
-                    await new Promise(r => setTimeout(r, 300)); 
+                if (i + batchSize < stockPool.length) {
+                    await new Promise(r => setTimeout(r, 400)); 
                 }
             }
             return finalData;
@@ -862,12 +1043,20 @@
                     for (let filter of currentFilters) {
                         let passThisFilter = false;
                         switch (filter) {
+                            case '每日觀察名單':
+                                passThisFilter = (
+                                    s.price > s.ma20 &&
+                                    s.ma20 > s.ma20_5d_ago &&
+                                    s.volume >= 1000 &&
+                                    s.trustBuyDays >= 3
+                                );
+                                break;
                             case 'SEPA 策略': 
                                 passThisFilter = (
                                     s.price > s.ma120 && 
                                     s.price > s.ma240 &&
                                     s.ma120 > s.ma240 &&
-                                    s.ma240 > s.ma240_20d_ago &&
+                                    s.ma240 > s.ma240_5d_ago &&
                                     s.price > s.ma60 &&
                                     s.price >= s.low240d * 1.3 &&
                                     s.price >= s.high240d * 0.75
@@ -927,9 +1116,6 @@
             const dateStr = now.toISOString().split('T')[0].replace(/-/g, '/');
             const timeStr = now.toTimeString().split(' ')[0];
             
-            document.getElementById('sum-date').innerText = dateStr;
-            document.getElementById('sum-time').innerText = timeStr;
-            
             let conditionText = currentFilters.length > 0 ? currentFilters.join(' ＋ ') : '無';
             if(currentIndustryMap.category !== '全部') {
                 conditionText += ` ＋ ${currentIndustryMap.category}`;
@@ -948,30 +1134,37 @@
 
             document.getElementById('sum-total').innerText = baseCount;
             document.getElementById('sum-matched').innerText = processedData.length;
-
-            if(processedData.length > 0) {
-                const sortedByChg = [...processedData].sort((a,b) => b.changePercent - a.changePercent);
-                const strongNames = sortedByChg.slice(0, 10).map(s => 
-                    `<span class="bg-white border border-gray-200 px-3 py-1 rounded-full text-[12px] md:text-sm font-bold text-gray-700 shadow-sm whitespace-nowrap">${s.name}(${s.id})</span>`
-                ).join('');
-                document.getElementById('sum-strong').innerHTML = strongNames;
-
-                const best = sortedByChg[0];
-                const worst = sortedByChg[sortedByChg.length - 1];
-
-                document.getElementById('sum-best').innerText = `${best.name} +${best.changePercent.toFixed(2)}%`;
-                document.getElementById('sum-worst').innerText = `${worst.name} ${worst.changePercent > 0 ? '+' : ''}${worst.changePercent.toFixed(2)}%`;
-            } else {
-                document.getElementById('sum-strong').innerHTML = '<span class="text-gray-400">--</span>';
-                document.getElementById('sum-best').innerText = '--';
-                document.getElementById('sum-worst').innerText = '--';
-            }
         }
 
         function renderTable() {
             const tbody = document.getElementById('stock-table-body');
+            const thead = document.getElementById('stock-table-head');
             let processed = stocksData.filter(s => s.matchCondition);
+            
             updateSummaryPanel(processed);
+
+            const isWatchlistMode = currentFilters.includes('每日觀察名單');
+
+            if (isWatchlistMode) {
+                thead.innerHTML = `
+                    <tr>
+                        <th class="px-2 py-2 md:px-4 md:py-3 cursor-pointer hover:bg-gray-200 whitespace-nowrap" onclick="sortData('id')">代號/名稱 ⇅</th>
+                        <th class="px-2 py-2 md:px-4 md:py-3 text-center whitespace-nowrap">月線斜率</th>
+                        <th class="px-1 py-2 md:px-4 md:py-3 text-center whitespace-nowrap">投信連買</th>
+                        <th class="px-2 py-2 md:px-4 md:py-3 text-right whitespace-nowrap">收盤價</th>
+                        <th class="px-2 py-2 md:px-4 md:py-3 text-left whitespace-nowrap">下週條件單價位</th>
+                    </tr>
+                `;
+            } else {
+                thead.innerHTML = `
+                    <tr>
+                        <th class="px-2 py-2 md:px-4 md:py-3 cursor-pointer hover:bg-gray-200 whitespace-nowrap" onclick="sortData('id')">代號/名稱 ⇅</th>
+                        <th class="px-2 py-2 md:px-4 md:py-3 cursor-pointer hover:bg-gray-200 text-right whitespace-nowrap" onclick="sortData('price')">股價/漲幅 ⇅</th>
+                        <th class="px-1 py-2 md:px-4 md:py-3 text-center whitespace-nowrap">結/動/籌</th>
+                        <th class="px-2 py-2 md:px-4 md:py-3 cursor-pointer hover:bg-gray-200 text-right md:text-left whitespace-nowrap" onclick="sortData('totalScore')">評分 ⇅</th>
+                    </tr>
+                `;
+            }
 
             processed.sort((a, b) => {
                 let vA = a[currentSort.key], vB = b[currentSort.key];
@@ -981,9 +1174,9 @@
             tbody.innerHTML = '';
             
             if (processed.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-6 md:p-8 text-center text-gray-500">
+                tbody.innerHTML = `<tr><td colspan="5" class="p-6 md:p-8 text-center text-gray-500">
                     <div class="font-bold mb-2">查無符合條件的股票</div>
-                    <div class="text-xs text-gray-400 leading-relaxed">提示：可能條件互斥（如同時選擇買進與賣出）<br>或沒有資料符合，請嘗試減少選項。</div>
+                    <div class="text-xs text-gray-400 leading-relaxed">提示：可能條件互斥或沒有資料符合，請嘗試減少選項。</div>
                 </td></tr>`;
                 return;
             }
@@ -1001,32 +1194,60 @@
                         setTimeout(() => { document.getElementById('detail-title').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
                     }
                 };
-                
-                tr.innerHTML = `
-                    <td class="px-2 py-2 md:px-4 md:py-3 whitespace-nowrap">
-                        <div class="font-bold text-gray-800 text-[11px] md:text-sm">${stock.id}</div>
-                        <div class="text-gray-500 text-[9px] md:text-xs">${stock.name}</div>
-                    </td>
-                    <td class="px-2 py-2 md:px-4 md:py-3 text-right whitespace-nowrap">
-                        <div class="font-bold ${color} text-[11px] md:text-sm">${stock.price.toFixed(1)}</div>
-                        <div class="text-[9px] md:text-xs ${color}">${sign}${stock.changePercent}%</div>
-                    </td>
-                    <td class="px-1 py-2 md:px-4 md:py-3 text-center whitespace-nowrap">
-                        <div class="flex justify-center gap-1">
-                            <div class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${stock.passStructure ? 'bg-red-500' : 'bg-gray-300'}"></div>
-                            <div class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${stock.passMomentum ? 'bg-red-500' : 'bg-gray-300'}"></div>
-                            <div class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${stock.scoreChips >= 20 ? 'bg-red-500' : 'bg-gray-300'}"></div>
-                        </div>
-                    </td>
-                    <td class="px-2 py-2 md:px-4 md:py-3 whitespace-nowrap">
-                        <div class="flex items-center justify-end md:justify-start gap-1.5">
-                            <span class="font-bold text-gray-700 text-[11px] md:text-sm w-5 md:w-8 text-right md:text-left">${stock.totalScore}</span>
-                            <div class="hidden sm:block w-12 md:w-16 bg-gray-200 rounded-full h-1.5 md:h-2">
-                                <div class="${stock.totalScore >= 80 ? 'bg-red-500' : 'bg-g-blue'} h-1.5 md:h-2 rounded-full" style="width: ${(stock.totalScore/130)*100}%"></div>
+
+                if (isWatchlistMode) {
+                    const slope = (stock.ma20 - stock.ma20_5d_ago) / stock.ma20_5d_ago;
+                    let maTrend = '走平';
+                    let slopeColor = 'text-gray-500';
+                    if (slope > 0.02) { maTrend = '陡升'; slopeColor = 'text-red-600 font-bold'; }
+                    else if (slope > 0.005) { maTrend = '緩升'; slopeColor = 'text-red-400'; }
+
+                    const triggerPrice = stock.price > stock.high20d * 0.98 ? `突破前高 ${stock.high20d.toFixed(1)} 買進` : `回踩月線 ${stock.ma20.toFixed(1)} 買進`;
+
+                    tr.innerHTML = `
+                        <td class="px-2 py-2 md:px-4 md:py-3 whitespace-nowrap">
+                            <div class="font-bold text-gray-800 text-[11px] md:text-sm">${stock.id} ${stock.name}</div>
+                        </td>
+                        <td class="px-2 py-2 md:px-4 md:py-3 text-center whitespace-nowrap">
+                            <span class="${slopeColor} text-[11px] md:text-sm bg-gray-50 px-2 py-1 rounded">${maTrend}</span>
+                        </td>
+                        <td class="px-1 py-2 md:px-4 md:py-3 text-center whitespace-nowrap">
+                            <span class="text-red-600 font-bold text-[11px] md:text-sm">${stock.trustBuyDays} 天</span>
+                        </td>
+                        <td class="px-2 py-2 md:px-4 md:py-3 text-right whitespace-nowrap">
+                            <div class="font-bold ${color} text-[11px] md:text-sm">${stock.price.toFixed(1)}</div>
+                        </td>
+                        <td class="px-2 py-2 md:px-4 md:py-3 whitespace-nowrap text-left text-[11px] md:text-sm text-gray-600">
+                            ${triggerPrice}
+                        </td>
+                    `;
+                } else {
+                    tr.innerHTML = `
+                        <td class="px-2 py-2 md:px-4 md:py-3 whitespace-nowrap">
+                            <div class="font-bold text-gray-800 text-[11px] md:text-sm">${stock.id}</div>
+                            <div class="text-gray-500 text-[9px] md:text-xs">${stock.name}</div>
+                        </td>
+                        <td class="px-2 py-2 md:px-4 md:py-3 text-right whitespace-nowrap">
+                            <div class="font-bold ${color} text-[11px] md:text-sm">${stock.price.toFixed(1)}</div>
+                            <div class="text-[9px] md:text-xs ${color}">${sign}${stock.changePercent}%</div>
+                        </td>
+                        <td class="px-1 py-2 md:px-4 md:py-3 text-center whitespace-nowrap">
+                            <div class="flex justify-center gap-1">
+                                <div class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${stock.passStructure ? 'bg-red-500' : 'bg-gray-300'}"></div>
+                                <div class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${stock.passMomentum ? 'bg-red-500' : 'bg-gray-300'}"></div>
+                                <div class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${stock.scoreChips >= 20 ? 'bg-red-500' : 'bg-gray-300'}"></div>
                             </div>
-                        </div>
-                    </td>
-                `;
+                        </td>
+                        <td class="px-2 py-2 md:px-4 md:py-3 whitespace-nowrap">
+                            <div class="flex items-center justify-end md:justify-start gap-1.5">
+                                <span class="font-bold text-gray-700 text-[11px] md:text-sm w-5 md:w-8 text-right md:text-left">${stock.totalScore}</span>
+                                <div class="hidden sm:block w-12 md:w-16 bg-gray-200 rounded-full h-1.5 md:h-2">
+                                    <div class="${stock.totalScore >= 80 ? 'bg-red-500' : 'bg-g-blue'} h-1.5 md:h-2 rounded-full" style="width: ${(stock.totalScore/130)*100}%"></div>
+                                </div>
+                            </div>
+                        </td>
+                    `;
+                }
                 tbody.appendChild(tr);
             });
         }
@@ -1065,13 +1286,10 @@
 
         function selectIndustry(category, subCategory) {
             currentIndustryMap = { category, subCategory };
-            
             let labelText = category === '全部' ? '全部產業' : (subCategory === '全部' ? category : subCategory);
             document.getElementById('current-industry-label').innerText = labelText;
-            
             document.querySelectorAll('.industry-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
-
             stocksData = evaluateStocks(stocksData);
             renderTable();
             toggleIndustryModal();
@@ -1222,8 +1440,6 @@
                 chartData = { candles, volumes };
             }
 
-            if (!chartData) chartData = generateMockChartData(stock.price);
-
             windowData = chartData;
 
             candlestickSeries.setData(chartData.candles);
@@ -1237,7 +1453,6 @@
             if(windowSeries.ma240) windowSeries.ma240.setData(calculateSMA(chartData.candles, 240));
 
             toggleChartSeries();
-
             chart.timeScale().fitContent();
             
             loading.classList.add('hidden');
@@ -1279,7 +1494,7 @@
         document.getElementById('btn-refresh').addEventListener('click', () => {
             document.getElementById('loading-state').innerHTML = `
                 <svg class="animate-spin h-8 w-8 text-g-blue" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                <span id="loading-text" class="text-sm">連線 FinMind API 抓取中... (無金鑰可能觸發備用模擬資料)</span>
+                <span id="loading-text" class="text-sm">連線 FinMind API 抓取中...</span>
             `;
             refreshData();
         });
